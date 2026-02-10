@@ -1,0 +1,184 @@
+
+
+\pdfinfo{
+   /Author (Arthur Jakobsson)
+   /Title  (Robots: Our new overlords)
+   /CreationDate (D:20101201120000)
+   /Subject (Robots)
+   /Keywords (Robots;Overlords)
+}
+
+% \begin{document}
+
+% paper title
+% \title{\waglong \\System Identification for Zero-Shot Motor Policy Optimization}
+
+% You will get a Paper-ID when submitting a pdf file to the conference system
+% \author{Author Names Omitted for Anonymous Review. Paper-ID [add your ID here]}
+
+%\TODO{paste in full author list from notes for arxiv}
+
+% \section{Appendix}
+
+
+
+\setcounter{table}{0}
+\begin{strip}
+\centering
+\section{Appendix}
+\small
+\label{tab:full_results}
+\begin{threeparttable}
+\captionsetup{labelformat=AppendixTables}
+\caption{Complete experimental results across all rope configurations and parameter prediction methods. Results were repeatable, so one trial was performed for each task-rope combination.}
+\begin{tabular}{@{}ll@{\hspace{3pt}}c@{}c@{\hspace{4pt}}c@{}c@{\hspace{4pt}}c@{}c@{\hspace{4pt}}c@{}c@{\hspace{4pt}}c@{}c@{\hspace{4pt}}c@{}c@{\hspace{4pt}}@{\hspace{4pt}}c@{}c@{\hspace{4pt}}c@{}c@{\hspace{4pt}}c@{}c@{\hspace{4pt}}c@{}c@{\hspace{4pt}}c@{}c@{\hspace{4pt}}c@{}c@{}}
+\toprule
+& & \multicolumn{12}{c@{\hspace{10pt}}}{\textbf{Lobbing}} & \multicolumn{12}{c}{\textbf{Draping}} \\
+\cmidrule(lr){3-14} \cmidrule(l){15-26}
+& & \multicolumn{2}{c@{\hspace{4pt}}}{45cm} & \multicolumn{2}{c@{\hspace{4pt}}}{45cm} & \multicolumn{2}{c@{\hspace{4pt}}}{45cm} & \multicolumn{2}{c@{\hspace{4pt}}}{45cm} & \multicolumn{2}{c@{\hspace{4pt}}}{55cm} & \multicolumn{2}{c@{\hspace{4pt}}}{65cm} 
+& \multicolumn{2}{c@{\hspace{4pt}}}{45cm} & \multicolumn{2}{c@{\hspace{4pt}}}{45cm} & \multicolumn{2}{c@{\hspace{4pt}}}{45cm} & \multicolumn{2}{c@{\hspace{4pt}}}{45cm} & \multicolumn{2}{c@{\hspace{4pt}}}{55cm} & \multicolumn{2}{c}{65cm} \\
+\textbf{Rope} & \textbf{Method} & \multicolumn{2}{c@{\hspace{4pt}}}{5g} & \multicolumn{2}{c@{\hspace{4pt}}}{10g} & \multicolumn{2}{c@{\hspace{4pt}}}{20g} & \multicolumn{2}{c@{\hspace{4pt}}}{30g} & \multicolumn{2}{c@{\hspace{4pt}}}{5g} & \multicolumn{2}{c@{\hspace{10pt}}}{5g}
+& \multicolumn{2}{c@{\hspace{4pt}}}{5g} & \multicolumn{2}{c@{\hspace{4pt}}}{10g} & \multicolumn{2}{c@{\hspace{4pt}}}{20} & \multicolumn{2}{c@{\hspace{4pt}}}{30g} & \multicolumn{2}{c@{\hspace{4pt}}}{5g} & \multicolumn{2}{c}{5g} \\
+\cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8} \cmidrule(lr){9-10} \cmidrule(lr){11-12} \cmidrule(lr){13-14}
+\cmidrule(lr){15-16} \cmidrule(lr){17-18} \cmidrule(lr){19-20} \cmidrule(lr){21-22} \cmidrule(lr){23-24} \cmidrule(l){25-26}
+& & \textbf{T} & \textbf{S} & \textbf{T} & \textbf{S} & \textbf{T} & \textbf{S} & \textbf{T} & \textbf{S} & \textbf{T} & \textbf{S} & \textbf{T} & \textbf{S}
+& \textbf{S} & \textbf{D} & \textbf{S} & \textbf{D} & \textbf{S} & \textbf{D} & \textbf{S} & \textbf{D} & \textbf{S} & \textbf{D} & \textbf{S} & \textbf{D} \\
+\midrule
+\multirow{2}{*}{\textcolor{Brown}{Brown}} 
+ & $\Phi$-NN & \cmark & --- & \cmark & \cmark & \cmark & \cmark & --- & --- & --- & --- & \cmark & \cmark 
+ & \cmark & 3.5 & \cmark & 5.0 & \cmark & 5.0 & \cmark & 3.0 & --- & --- & --- & --- \\
+ & $\Phi$-CMA-ES & \cmark & --- & \cmark & --- & --- & --- & \cmark & --- & \cmark & \cmark & \cmark & \cmark 
+ & \cmark & 4.5 & \cmark & 4.5 & \cmark & 4.5 & \cmark & 5.5 & \cmark & 0.0 & --- & --- \\
+ \addlinespace
+\multirow{2}{*}{\textcolor{Dandelion}{Yellow}} 
+ & $\Phi$-NN & --- & --- & \cmark & --- & \cmark & --- & \cmark & --- & --- & --- & \cmark & \cmark 
+ & \cmark & 10.0 & \cmark & 8.5 & \cmark & 11.0 & --- & 11.0 & \cmark & 0.0 & --- & --- \\
+ & $\Phi$-CMA-ES & \cmark & \cmark & --- & --- & --- & --- & \cmark & --- & \cmark & \cmark & \cmark & \cmark 
+ & \cmark & 3.5 & \cmark & 4.0 & \cmark & 3.5 & --- & 6.0 & \cmark & 5.5 & --- & --- \\
+ \addlinespace
+\multirow{2}{*}{\textcolor{Red}{Red}} 
+ & $\Phi$-NN & --- & --- & \cmark & --- & \cmark & --- & \cmark & --- & \cmark & \cmark & --- & --- 
+ & \cmark & 4.5 & \cmark & 4.5 & \cmark & 3.5 & \cmark & 1.8 & --- & --- & --- & --- \\
+ & $\Phi$-CMA-ES & \cmark & \cmark & \cmark & --- & --- & --- & \cmark & --- & \cmark & \cmark & \cmark & \cmark 
+ & \cmark & 9.5 & \cmark & 4.5 & \cmark & 3.0 & \cmark & 2.3 & --- & --- & --- & --- \\
+ \addlinespace
+\multirow{2}{*}{\textcolor{Orange}{Orange}} 
+ & $\Phi$-NN & --- & --- & --- & --- & --- & --- & --- & --- & --- & --- & \cmark & --- 
+ & \cmark & 3.9 & \cmark & 4.8 & --- & --- & --- & --- & \cmark & 1.5 & --- & --- \\
+ & $\Phi$-CMA-ES & --- & --- & --- & --- & --- & --- & --- & --- & --- & --- & \cmark & \cmark 
+ & \cmark & 4.5 & \cmark & 5.4 & --- & --- & --- & --- & \cmark & 0.5 & --- & --- \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\small
+\item T = Target hit, S = Stayed, D = Distance (cm). \cmark~= success, ---~= failure or not measured.
+\end{tablenotes}
+\end{threeparttable}
+\end{strip}
+
+% \section{Appendix}
+
+\subsection{Transferability}
+
+We provide detailed results of our transferability experiments in Appendix Table \ref{tab:phi_comparison}. We perform a different motion on the robot with higher jerk to analyze transferability from one motion to another of our predicted parameters. We compare the real rope's movement to simulated ropes with either $\Phi$-NN, $\Phi$-CMAES, or random (within distribution) system parameters. The results show high Pearson correlation coefficient scores and low average point distances for $\Phi$-NN and $\Phi$-CMAES compared to the random ropes. 
+
+\begin{table}[h]
+\centering
+\captionsetup{labelformat=AppendixTables}
+\caption{Estimation of parameters, material, and physical description of test ropes on different $\Phi$ methods.}
+\label{tab:phi_comparison}
+\begin{threeparttable}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llcccccc}
+\toprule
+\textbf{Rope} & \textbf{Lead} & \multicolumn{3}{c}{\textbf{Frequency correlation}} & \multicolumn{3}{c}{\textbf{Average Point Distance}**} \\
+& \textbf{(g)} & NN & CMAES & Random* & NN & CMAES & Random* \\
+\midrule
+\multirow{2}{*}{\textcolor{Brown}{Brown}}  & 10 & 0.98 & 0.94 & 0.76 & 4.8 & 6.9 & 13.4 \\
+ & 30 & 0.97 & 0.91 & 0.85 & 4.7 & 8.4 & 14.7 \\
+\cmidrule(lr){1-8}
+\multirow{2}{*}{\textcolor{Dandelion}{Yellow}} & 10 & 0.98 & 0.96 & 0.80 & 4.0 & 5.6 & 13.7 \\
+ & 30 & 0.97 & 0.94 & 0.77 & 4.9 & 7.4 & 15.2 \\
+\cmidrule(lr){1-8}
+\multirow{2}{*}{\textcolor{Red}{Red}} & 10 & 0.97 & 0.95 & 0.81 & 7.7 & 5.8 & 14.2 \\
+ & 30 & 0.97 & 0.93 & 0.78 & 6.3 & 8.3 & 15.9 \\
+\cmidrule(lr){1-8}
+\multirow{2}{*}{\textcolor{Orange}{Orange}} & 10 & 0.97 & 0.89 & 0.91 & 4.5 & 4.3 & 12.4 \\
+ & 30 & 0.99 & 0.99 & 0.90 & 3.2 & 2.8 & 10.7 \\
+\cmidrule(lr){1-8}
+\multirow{2}{*}{\textcolor{CadetBlue}{Chain***}} & 10 & 0.77 & 0.99 & 0.76 & 8.4 & 3.2 & 14.2 \\
+ & 30 & 0.98 & 0.99 & 0.78 & 6.0 & 5.2 & 12.8 \\
+\midrule
+Average &  & 0.95 & 0.95 & 0.81 & 5.4 & 5.8 & 13.6 \\
+\cmidrule(lr){3-8}
+Std.\ Dev. & & 0.06 & 0.03 & 0.05 & 1.7 & 2.0 & 1.6 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\small
+\item * For $\Phi$-Random we randomly sample 10 (simulation stable) ropes as a control. Distance is mean trajectory error in the image plane (ZED Mini camera model, depth 0.65\,m), in centimeters.
+\item ** cm per frame
+\item *** out-of-distribution
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+\subsection{$\Phi$-NN Activations Analysis}
+% We perform a case study of neural network activations during the roll-out of a rope. \TODO{@abhi We implement this by...}. We include an example of the detected activation for each parameter for one example rope in Appendix Table \ref{tab:activation_heatmaps}; we observed similar activations across multiple ropes. This reinforces our hypothesis from section \ref{sec:wiggleablation} that longer and faster wiggles provide vital information for the neural network. We note that parameters such as ball stiffness, ball damping, and mass parameters have high activations later in the wiggle. We observed in the real that stiff, light-lead ropes would wiggle similarly to non-stiff, heavy-lead ropes, but over time the heavy-lead ropes would gain momentum and swing higher. We hypothesize that multiple-parameter relationships like this are the reason for later activations in the aforementioned parameters.
+
+We perform a case study of $\Phi$-NN activations by computing gradient-based sensitivity $\frac{\partial p_i}{\partial \mathbf{x}_t}$ for each predicted parameter $p_i$ with respect to input joint positions $\mathbf{x}_t$ and angles $\theta_t$ at each timestep, revealing which spatiotemporal regions of the wiggle most influence each parameter's prediction (Appendix Table \ref{tab:activation_heatmaps}). Our experiments suggest that ball stiffness, ball damping, and mass parameters exhibit high activations later in the wiggle, with sensitivity peaks at different timeframes potentially correlating with trajectory inflection points where physical differences become apparent. The gradual diminishment of sensitivity toward the sequence end suggests that while extended wiggle duration is necessary to capture temporal dynamics, excessively long wiggles provide limited additional information. We hypothesize that multi-parameter relationships, such as stiff, light-lead ropes initially wiggling similarly to non-stiff, heavy-lead ropes before the latter gain momentum, contribute to these later activations.
+
+
+\subsection{Implementation Details}
+
+\subsubsection*{Network Architecture}
+$\Phi$-NN uses a temporal convolutional encoder followed by a multi-layer perceptron. The encoder consists of three 1D convolutional blocks applied along the temporal dimension. Each block uses kernel size 8, stride 1, followed by layer normalization, GELU activation, average pooling (stride 2), and dropout (rate 0.3). After the convolutional blocks, adaptive pooling produces a fixed-length representation, which is passed through a linear layer to produce a 256-dimensional embedding. The MLP head uses hidden dimensions [128, 64] to map the embedding to 9 normalized rope parameters $\hat{\xi} \in [0,1]^9$. The complete model has 1.2M parameters.
+
+\subsubsection*{Feature Engineering}
+Angular velocity is computed using unwrapped finite differences with Gaussian smoothing ($\sigma=1.0$, kernel size 5). Angular acceleration uses the same approach with $\sigma=1.5$ and kernel size 7. We record rope motion for 400 frames at 60 FPS ($\sim$6.7 seconds).
+
+\subsubsection*{Domain Randomization}
+Calibration noise: Gaussian noise ($\sigma=2$\,cm) applied to camera position and lookat point. Tracking noise: Anisotropic noise spanning 0-3 pixels with temporal correlation coefficient $\alpha=0.8$, with higher variance in the longitudinal direction than lateral to mimic realistic tracking errors. Trajectory padding: Randomly add 0-20 frames at the start of each trajectory to simulate recording delays.
+
+\subsubsection*{Curriculum Masking Schedule}
+Masking begins at epoch 50 using 50-frame contiguous blocks. From epochs 50-200, we mask 1-2 random blocks per trajectory. From epochs 200-400, we apply beginning-biased masking where blocks near the trajectory start are preferentially masked. From epochs 400-500, we increase to 7 masked blocks per trajectory. All masked frames are set to zero.
+
+\subsubsection*{Training Configuration}
+Dataset: 9000 training ropes and 1000 validation ropes with parameters sampled using Latin Hypercube Sampling (LHS) from the ranges in Table II (Main Paper). Loss: Mean squared error on normalized parameters. Optimizer: Adam with initial learning rate $10^{-3}$, cosine annealing schedule, and 5-epoch warmup. Batch size: 32. Training duration: 500 epochs.
+
+
+\begin{table*}[t]
+\centering
+\captionsetup{labelformat=AppendixTables}
+\caption{Neural network activation heatmaps showing gradient flow for each rope parameter during wiggle observation. These are for one demonstration of our 45cm brown rope with five gram lead.}
+\label{tab:activation_heatmaps}
+\begin{tabular}{@{}c@{\hspace{1.5em}}c@{\hspace{1.5em}}c@{}}
+\toprule
+Number of links & Rope radius & Lead mass \\
+\midrule
+\includegraphics[width=0.29\linewidth]{heatmap/num-links_gradient_summary_heatmap.png} & 
+\includegraphics[width=0.29\linewidth]{heatmap/rope-radius_gradient_summary_heatmap.png} & 
+\includegraphics[width=0.29\linewidth]{heatmap/lead-mass_gradient_summary_heatmap.png} \\[1em]
+%
+\midrule
+Rope length & Mass per unit len & Lead radius \\
+\midrule
+\includegraphics[width=0.29\linewidth]{heatmap/rope-length_gradient_summary_heatmap.png} & 
+\includegraphics[width=0.29\linewidth]{heatmap/mass-per-unit-len_gradient_summary_heatmap.png} & 
+\includegraphics[width=0.29\linewidth]{heatmap/lead-radius_gradient_summary_heatmap.png} \\[1em]
+%
+\midrule
+Ball damping & Ball stiffness & Link extra scale \\
+\midrule
+\includegraphics[width=0.29\linewidth]{heatmap/ball-damping_gradient_summary_heatmap.png} & 
+\includegraphics[width=0.29\linewidth]{heatmap/ball-stiffness_gradient_summary_heatmap.png} & 
+\includegraphics[width=0.29\linewidth]{heatmap/link-extra-scale_gradient_summary_heatmap.png} \\[0.5em]
+\cmidrule{2-2}
+\multicolumn{3}{c}{\textbf{All Parameters}} \\
+\cmidrule{2-2}
+\multicolumn{3}{c}{\includegraphics[width=0.30\linewidth]{heatmap/All-Parameters_gradient_summary_heatmap.png}} \\
+% \cmidrule{2-2}format
+\end{tabular}
+\end{table*}
+
+% \end{document}

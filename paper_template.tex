@@ -1,0 +1,796 @@
+\documentclass[conference]{IEEEtran}
+\usepackage{times}
+
+% numbers option provides compact numerical references in the text. 
+\usepackage[numbers]{natbib}
+\usepackage{multicol}
+\usepackage{amsmath} 
+\usepackage{threeparttable}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{threeparttable}
+\usepackage{multirow}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{cuted}
+\usepackage{amsfonts}
+\usepackage{tikz}
+\usepackage{siunitx}
+\setlength{\belowcaptionskip}{-5pt}
+\usepackage[table]{xcolor}% http://ctan.org/pkg/xcolor
+
+\DeclareCaptionLabelFormat{AppendixTables}{Appendix Table #2}
+\usepackage{pifont}
+\newcommand{\cmark}{\ding{51}}  % checkmark
+\usepackage{caption}
+\usepackage{pifont}
+\usepackage[bookmarks=true]{hyperref}
+\newcommand{\waglong}{Wiggle and Go!}
+\newcommand{\wag}{WaG}
+\newcommand{\adaptation}{\textit{adaptation model ($\Phi$)}}
+\newcommand{\TODO}[1]{\textcolor{red}{#1}}
+
+\newcommand{\JI}[1]{\textcolor{red}{[JI: #1]}}
+\newcommand{\bart}[1]{\textcolor{blue}{[BD: #1]}}
+
+
+\pdfinfo{
+   /Author (Arthur Jakobsson)
+   /Title  (Wiggle and Go! System Identification for Zero-Shot Dynamic Rope Manipulation)
+   /CreationDate (D:20101201120000)
+   /Subject (Robots)
+   /Keywords (Robots;Overlords)
+}
+
+\begin{document}
+
+% paper title
+\title{\waglong{} System Identification for Zero-Shot Dynamic Rope Manipulation}
+
+% You will get a Paper-ID when submitting a pdf file to the conference system
+\author{Author Names Omitted for Anonymous Review. Paper-ID 806}
+% \author{\authorblockN{Arthur Jakobsson$^1$,
+% Abhinav Mahajan$^1$,
+% Karthik Pullalarevu$^1$,
+% Krishna Suresh$^1$,
+% Yunchao Yao$^2$,
+% Yuemin Mao$^1$,\\
+% Bardienus Duisterhof$^1$,
+% Shahram Syed$^1$,
+% Jeffrey Ichnowski$^1$}
+% \authorblockA{$^1$Robotics Institute, Carnegie Mellon University\\
+% \{ajakobss, abhinavm, kpullala, ksuresh2, yueminm, bduister, snsyed, jichnows\}@cs.cmu.edu}
+% \authorblockA{$^2$The University of North Carolina at Chapel Hill\\
+% yunchaoy@cs.unc.edu}}
+
+%\TODO{paste in full author list from notes for arxiv}
+
+\maketitle
+
+% avoiding spaces at the end of the author lines is not a problem with
+% conference papers because we don't use \thanks or \IEEEmembership
+
+\begin{strip}
+    \centering
+    \includegraphics[width=2\columnwidth]{images/revised_hero2.pdf}
+    % \begin{tikzpicture}
+    %     \clip[rounded corners=4pt] (0,0) rectangle (\columnwidth, 140px);
+    %     \node[anchor=south west, inner sep=0pt] at (0,0) {\includegraphics[width=\columnwidth]{images/Figure1_p1.pdf}};
+    % \end{tikzpicture}
+    % \hfill
+    % \begin{tikzpicture}
+    %     \clip[rounded corners=4pt] (0,0) rectangle (\columnwidth, 140px);
+    %     \node[anchor=south west, inner sep=0pt] at (0,0) {\includegraphics[width=\columnwidth]{images/Figure1_p2.pdf}};
+    % \end{tikzpicture}
+    \captionof{figure}{\waglong{} uses a brief \textit{wiggle} motion (left) to identify the dynamic behavior of a rope using a neural network model.
+    %Overview of our system-identification for rope manipulation pipeline. (Left) Robot performing a safe action (our ``wiggle'') to observe dynamic rope behavior for parameter estimation. 
+    This is fed into a goal-conditioned policy optimizer, which then \textit{goes!}, performing a dynamic fling (right), hitting the target in one shot. Our system identification model and policy optimizer work entirely in simulation enabling the wiggle and task rollout to be the only actions we perform in real.} %We perform action optimization for a goal-conditioned task in simulation using the predicted parameters. The predicted action is then executed on the real robot, zero-shot. }%\TODO{ reduce time? or call it safe and define it so the safety people are chill with it}\bart{Description feels incomplete. What does goal-conditioned task corpus mean? Can you also add more color to the robot demos? It feels almost grayscale right now. How do you do policy optimization? The caption of this figure may be pretty beefy, reviewer should understand your full method pretty much.}}
+    \label{fig:system_overview}
+\end{strip}
+
+\begin{abstract}
+Many robotic tasks are unforgiving; a single mistake in a dynamic throw can lead to unacceptable delays or unrecoverable failure. To mitigate this, we present a novel approach that leverages learned simulation priors to inform goal-conditioned dynamic manipulation of ropes for efficient and accurate task execution. Related methods for dynamic rope manipulation either require large real-world datasets to estimate rope behavior or the use of iterative improvements on attempts at the task for goal completion. We introduce Wiggle and Go!, a system-identification, two-stage framework that enables zero-shot task rope manipulation. The framework consists of a system identification module that observes rope movement to predict descriptive physical parameters, which then informs an optimization method for goal-conditioned action prediction for the robot to execute zero-shot in the real. Our method achieves strong performance across multiple dynamic manipulation tasks enabled by the same task-agnostic system identification module which offers seamless switching between different manipulation tasks, allowing a single model to support a diverse array of manipulation policies. We achieve a 3.55 cm average accuracy on 3D target striking in real using rope system parameters in comparison to 15.34 cm accuracy when our task model is not system-parameter-informed. We achieve a Pearson correlation coefficient of 0.95 between Fourier frequencies of the predicted and real ropes on an unseen trajectory. % \TODO{how to explain cma-es concisely?} \JI{Add a preview of the experiments and results here. e.g., ``In simulation and real-world experiments, the robot achieves one-shot performance XX\% and YY\% of the time respectively across ZZ tasks, significantly outperforming baselines.''}
+% This paper continues the exploration of goal-conditioned dynamic manipulation of deformable objects and leverages learned simulation priors for efficient and accurate task execution. Current state of the art methods, such as Iterative Residual Policy \cite{chi_iterative_2022}, utilize iteration of attempts at the task to achieve the goal; we aim to decrease or eliminate the need for iterative improvement for task execution. We introduce \waglong, an RMA-style \cite{kumar_rma_2021}, two-part pipeline. The pipeline leverages, through the use of an \adaptation, observation of rope movement to predict descriptive parameters of the rope to inform a second model which returns an executable trajectory. This trajectory is then executed and, if desired, iterated on to fine-tune. We find that we get an error within \TODO{XX\%} on the first attempt in all \TODO{XX} tasks. We find that our method reduces the total number of iterations needed by \TODO{XX\%} compared to a pure iterative learning control method. This method also enables one to choose which task to execute from a \TODO{corpus} of learned policies, all enabled by the same \adaptation.
+\end{abstract}
+
+\IEEEpeerreviewmaketitle
+
+\section{Introduction}
+%\footnote{we define safe by meaning a controlled action where neither the rope nor robot are moving in such a manner to endanger themselves or the surroundings} 
+Before a sailor throws a mooring line or a climber flings a rope, they might instinctively give it a brief shake. This `wiggle' is not just a habit---it is a sophisticated probe. In that brief motion, the human nervous system assesses the rope's characteristics to calibrate for the subsequent throw to a perfect landing---because a failure can have disastrous consequences.
+Robots performing similar dynamic tasks will be blind to these hidden dynamics, and if failures are unrecoverable (e.g., tangled, broken, or caught ropes) or lead to unacceptable delays, iteratively improving over multiple attempts may be too risky.
+To bridge this gap, we propose a framework that replicates this intuitive human strategy: using a diagnostic probing action to decode an object's physical identity before committing to a high-stakes dynamic maneuver.
+% \textit{We explore the task of using a safeaction to perform system identification of ropes and cables to enable zero-shot rope manipulation.} Rope manipulation is vital in search and rescue tasks from tossing rope-attached buoys to firemen navigating hoses where time and accuracy are paramount which motivates zero-shot rope manipulation. Humans have a strong ability to ascertain the dynamics of a rope by lifting, dangling and otherwise observing the rope, and, in many scenarios, humans can perform difficult dynamic actions in one attempt. 
+
+We propose \waglong{} (\wag{}), which features two primary steps (a) human-inspired system identification of ropes and (b) zero-shot goal-conditioned manipulation. Our observation and action rollout are pictured in Fig.~\ref{fig:system_overview}. Multiple prior works on dynamic rope manipulation explored the use of iterative refinement through an action policy~\cite{chi_iterative_2022, zhang_robots_2024}. Iteration serves as a strong prior for understanding the dynamics of the system but in some scenarios can be dangerous to the robot, surroundings, and the rope itself; therefore, we propose to understand rope dynamics through a short repeatable action or \emph{wiggle}.
+
+Goal-conditioned rope manipulation poses a challenge for manipulation policies because of complex object properties and complex manipulator dynamics \cite{chi_iterative_2022}. Dynamic manipulation of ropes results in complex rapid movement. Therefore, we require a strong understanding of rope behavior in dynamic conditions to develop policies to handle such objects in real. With our system-identification method, we are able to understand dynamic motions of the rope in one context and predict the motion of the same rope in a different context.
+
+Most dynamic rope manipulator methods also deal with the complexity of rope behavior modeling, either explicitly through physics simulations or indirectly by predicting the relationship between robot action and consequent rope movement. We do this explicitly by leveraging physics-based simulation and a parametrized representation of the rope to perform system identification (SysId).%; we have shown this to be a strong prior for goal-conditioned manipulations. 
+
+\textit{We contribute a novel system identification method to act as a prior for goal-conditioned rope manipulation tasks.} Specifically, this paper contributes a method to perform system-identification on ropes by executing a safe action (``wiggle'') using a simple temporal convolutional neural network. Our system identification method is task-agnostic and therefore can be applied as a prior for a wide range of rope-manipulation tasks. Our SysId method demonstrates a high level of transferability between rope tasks and on a diverse range of ropes. Our experiments demonstrate our SysId-enabled, zero-shot manipulation method achieves a median 2.1 cm accuracy in simulation and 3.55 cm accuracy in real on 3D target striking (in comparison to our baseline 12.8 cm and 15.29 cm respectively for non-system-parameter-informed action), and achieves over 50\% success rate on complex multi-objective rope tasks like lobbing and draping. We demonstrate that the SysId-parameterized rope can predict rope behavior when transferred between dynamic tasks; and what types of wiggles are most informative for model training.
+
+
+% \JI{This is not a bad opener, but it doesn't motivate why robots should take on this task. My usual advice is also: start with a attention getting first sentence to grab the readers attention, create a strong first impression, and make them want to read the rest of the paper. We also need to be careful not to overclaim. The paper tests on ropes and cables, not all deformable objects.}
+% Deformable object manipulation is an everyday part of human activity, and individuals learn to quickly manipulate objects such as textiles and ropes to perform a plethora of tasks. Specifically, we continue the exploration of goal-conditioned dynamic manipulation of ropes for tasks such as striking target points, multiple forms of wrapping, and achieving target rope shape formations. These tasks are motivated by real-world, human dynamic rope manipulation tasks such as whipping, sailboat knot-tying, and casting (e.g. life buoy casting). In addition, we achieve these tasks in a one-shot method to reduce the likelihood of rope entanglement or damage and increase the speed and decrease the potential risks of task completion.
+
+% Goal-conditioned rope manipulation poses several challenges due to the need to predict the behavior of deformable objects which have large degrees of flexibility and modeling struggles to take in account variations such as threading twists, air resistance and nonlinear anisotropic stiffness. In addition, the necessary high speeds of rope dynamic rope tasks are constrained by robot torque capabilities and range of motion.
+
+% We introduce \waglong{} (\wag) a method which leverages knowledge from simulation through an \adaptation{} \JI{don't introduce math terms here, save it for the problem statement or method section.} and enables observation-informed actions from a \TODO{corpus} of learned tasks. Previous methods that used a combination of simulation and real-life demonstrations such as Iterative Residual Policy (\citet{chi_iterative_2022}) and Robots of the Lost Arc (\citet{zhang_robots_2024}) use progressive attempts at the task and an iterative learning control (ILC)-style  method to improve the accuracy of the demonstration. This paper aims to remove the need for task iteration for task completion by leveraging simulation priors and a known, safe demonstration.
+
+ % \JI{remove this intro sentence, or better yet, shorten to give an overview of \emph{how} it's related (not just what it's related to). The `Related Work' section should describe how the work is related (not just what work is related)---compare/contrast, provide similarities and differences, etc.}
+\section{Related Work}
+
+\subsection{Rope Dynamics Through Data and Simulation}
+
+% Learning rope dynamics from large-scale data has been a persistent challenge due to the difficulty and safety concerns of collecting diverse real-world demonstrations. Early work by ~\citet{nair_combining_2017} required tens of thousands of autonomous interactions to learn rope dynamics from scratch. More recent approaches leverage benchmarks and simulation to reduce real-world data requirements: SoftGym ~\cite{lin2020softgym} provides standardized RL environments for deformable objects, while imitation learning methods ~\cite{zhao2023learning, luo2024multistage} learn complex multi-stage behaviors from demonstration datasets. These data-intensive approaches achieve strong generalization but require extensive collection efforts that may be impractical for dynamic manipulation where failures can damage equipment or create safety hazards.
+
+Learning rope dynamics from large-scale data has been a persistent challenge due to the difficulty and safety concerns of collecting diverse real-world demonstrations. Early work by ~\citet{nair_combining_2017} required tens of thousands of autonomous interactions to learn rope dynamics from scratch. More recent self-supervised approaches ~\cite{wang2024selfsupervisedlearningdynamicplanar} reduce data requirements for dynamic cable manipulation but still rely on extensive autonomous interaction. Benchmark-driven methods like SoftGym ~\cite{lin2020softgym} provide standardized RL environments for deformable objects, while imitation learning approaches ~\cite{zhao2023learning, luo2024multistage} learn complex multi-stage behaviors from demonstration datasets. These data-intensive approaches achieve strong generalization but require extensive collection efforts that may be impractical for dynamic manipulation where failures can damage equipment or create safety hazards.
+
+Sim-to-real transfer offers an alternative by training primarily in simulation. Domain randomization methods ~\cite{matas_simreal_2018, tiboni2023dropo} train policies across varied simulation parameters and lighting conditions to achieve transfer to real deformable objects, with recent work improving parameter distribution estimation from limited real data. Differentiable physics simulators \cite{hu2019chainqueen, jatavallabhula2021gradsim, chen2024deform, si2024difftactile} enable gradient-based parameter identification and trajectory optimization through backpropagation. Trajectory optimization frameworks \cite{jnadi2026scope, artinian2024optimal, yamakawa_simple_2012, yamakawa_dynamic_2013} leverage physics-based representations like Cosserat rods and convex formulations to generate smooth rope trajectories with explicit physics constraints. These simulation-based approaches provide strong inductive biases but often require either accurate prior parameters or extensive sim-to-real calibration.
+
+\subsection{System Identification for Deformable Objects}
+
+System identification approaches explicitly estimate physical parameters to bridge simulation and reality. Real2Sim2Real \cite{lim_planar_2022} optimizes simulator parameters to match observed trajectories for dynamic casting, though requiring extensive physical experiments for each new cable. GenORM \cite{kuroki_genorm_2025} and GenDOM \cite{kuroki_gendom_2025} condition policies on Young's modulus and Poisson's ratio estimated from point cloud observations during predefined lifting motions, demonstrating one-shot manipulation on single-stage planar tasks. \waglong{} differs in three key ways: (1) we use higher-dimensional, rope-specific parameters rather than material properties alone, \citet{lim_planar_2022} argues that Young's modulus-based simulation can create discrepancies for ropes with leads, (2) we demonstrate transferability across multiple complex 3D manipulation tasks rather than single-stage goals, and (3) we perform an analysis of how observation strategy (wiggle design) affects parameter prediction quality.
+
+Recent work on learning-based dynamics models \cite{yang2022learning, wang2022offline} uses neural networks to capture rope behavior through recurrent architectures and graph representations. The hybrid offline-online approach by \citet{yu_shape_2022} combines simulation training with online adaptation, noting that model errors from changing object properties can necessitate refinement during manipulation. These learned dynamics approaches provide flexibility but typically predict implicit representations rather than interpretable simulation parameters. Our method learns to predict explicit rope parameters that can be used with standard physics-based trajectory optimization, enabling both interpretability and seamless integration with planning algorithms.
+
+\subsection{Model Predictive Control and Dynamic Manipulation}
+
+Model predictive control combines real-time optimization with feedback, offering robustness to modeling errors. Cable shaping MPC \cite{viljoen2024cable} combines learned interaction models with MPC for industrial routing, while aerial manipulation work \cite{sun2023nonlinear, sun2025agile} demonstrates aggressive cable-suspended load manipulation through nonlinear MPC accounting for full dynamics. These methods excel at online adaptation through continuous re-planning, though computational overhead typically limits them to slower quasi-static tasks. Our approach complements MPC methods by providing accurate parameter estimates that could improve their simulation models, while targeting the sub-second dynamic motions where pre-execution planning informed by system identification offers advantages over continuous re-optimization.
+
+
+\begin{figure*} [t]
+\includegraphics[width=2\columnwidth]{images/pipeline_figure2.pdf}
+\caption{The \wag{} pipeline. We train a system identification neural network $\Phi$-NN entirely in simulation. We perform a wiggle in real as an input  for $\Phi$-NN. The output of these parameters are used to optimize an action for a chosen task which is then executed in real. Items highlighted in \textcolor{Green}{green} are the only elements of our procedure performed in real, once each.}\label{fig:pipeline}
+\end{figure*}
+\subsection{Iterative Learning Methods}
+
+Iterative learning control refines policies through repeated trials \cite{bristow_survey_2006}. For dynamic rope manipulation, \citet{chi_iterative_2022, zhang_robots_2024} achieve strong results across diverse ropes and tasks through progressive refinement, typically requiring 5-10 trials per goal to achieve precise manipulation. Our method seeks to address scenarios where repeated attempts pose risks of rope damage, equipment failure, or environmental hazards. Critically different, our system identification module is task-agnostic so the same wiggle observation can support multiple downstream manipulation tasks, enabling seamless switching between different goals without additional real-world trials.
+
+
+\subsection{Adaptation Through Privileged Learning}
+
+Our adaptation approach draws inspiration from privileged learning frameworks like Rapid Motor Adaptation \cite{kumar_rma_2021, qi_-hand_2022, liang_rapid_2024}, which train policies with privileged environmental information in simulation while adaptation modules learn to infer hidden factors from observations. However, our implementation differs fundamentally: rather than implicit latent representations for online adaptation during task execution, we perform explicit parameter estimation offline through a safe observation action. This design enables task-agnostic system identification where the same adaptation module supports multiple downstream policies, and leverages the interpretability of physics-based simulation parameters for deformable object manipulation.
+\section{Method}
+
+
+% \JI{In the method section in particular, make sure you tell the reader \emph{why} you are doing something, before \emph{how}. Also, it's good to acknowledge prior work, but you should make sure the reader has enough knowledge to know what you mean---thus you should describe what `GenDOM-style' means and add a citation/ref to it.}
+% This work continues the exploration into GenDOM-style \cite{kuroki_genorm_2025,kuroki_gendom_2025} system identification of ropes which we apply to solving dynamic, non-planar, goal conditioned tasks with robot actions. We build on an RMA-style \cite{kumar_rma_2021, qi_-hand_2022, liang_rapid_2024} framework, leveraging a separately trained adaptation model to perform system identification. Because of the speed of dynamic deformable object manipulations tasks, we target open loop predictions, no longer utilizing changing scene information for our adaptation and task policies as in RMA. \JI{``no longer'' implies the reader was thinking `changing scene information' (or even knows what it means). Basically make sure the reader has enough information to understand it---don't force them to look up and read another paper---they hate that.}
+
+% Unlike previous works related to RMA, in which the observation space was heavily tied to the action and state space of the task, different tasks for \wag{} rely on the same primary observation space. This enables the creation of a task \TODO{corpus}. Formally, we define the task \TODO{corpus}, $\mathcal{T}$, as the set of all functions with inputs that include a rope system parameter, $\xi\in\Xi$, and a goal, $g\in\mathcal{G}$, which outputs a robot trajectory, $\vec{a}\in\mathcal{A}$. In some instances $f\in\mathcal{T}$ may take multiple inputs such as a goal condition or additional observations $\mathcal{X}$; similarly, the action space output is not constrained and represents any vector for robot instruction and may vary within the task \TODO{corpus}.
+
+% \begin{equation}
+% \mathcal{T} = \{f \mid f: \Xi \times \mathcal{G} \times \mathcal{X} \to \mathcal{A}\}
+% \end{equation}
+
+% Figure \ref{fig:pipeline} visualizes our pipeline.
+
+% \subsection{Our Simulation} \label{sec:oursim}
+
+% We use a rigid-body simulator and a ball-capsule simulation of the rope which \citet{lim_planar_2022} demonstrated to be a realistic representation of ropes. A serial chain of rigid bodies are connected with ball joints. Each ball joint has a damping and stiffness. Each link on the rope has the rotational inertia of a cylinder with the length of the link and the radius of the rope. The rope model also leverages the Drake collision model to simulate self-collision and collision with the pole. The robot arm is also modeled via rigid-body dynamics in Drake. Commands are executed in simulation with the robot tracking the target joint positions with a PD servo \cite{drake}. We vary our rope simulations within a range of ropes (seen in Table \ref{tab:param-ranges}) which we believe represent the possible range of ropes reasonable for our task. Similarly to \citet{lim_planar_2022} we explore the ability for our model predict different trajectories given a weight (lead) attached the end of the rope. 
+
+% We explored several potential simulators, but we tested Genesis most extensively because of various inhibiting issues with the other simulators. Simulators such as Genesis, Newton and Mujoco include GPU acceleration and parallelization compared to our CPU-bound Drake simulation and therefore enabled us to train data-intensive models such as a multi-arm bandit as we describe in \ref{mab}. In testing, we observed high levels of inconsistency between simulated rope movement and real rope movement which we attributed to unknown force transfers happening in simulation from the robot into the rope links. This motivated our transition to using Drake as our primary simulator but further exploration with scalable physics simulators is an exciting direction for future work and will broaden the horizon for possible policies within the task \TODO{corpus}. \JI{Readers won't care about the exploration---they want to know what works and how well it works. Unless there's a higher-level message you want to convey about simulator behavior that you can tie to a metric and show in results---delete this. Just mention something like `we use X simulator because it provides Y.'}
+
+% \subsection{Task setup}
+% We explore 3D target striking, expanding on \citet{chi_iterative_2022}'s planar target striking, wherein we aim to minimize distance from the tip of the rope (last link) to the target location. Our method is configurable on any robotic arm, but for our experiments we use the UFactory xArm 7 joint robotic arm \cite{ufactory2022xarm7}. For wiggle data collection we attach the rope to the end effector directly. We observed that for several targets and ropes the xArm struggles to generate enough force to achieve the task. \JI{Shorten to `To increase the moment arm, we attach ...' (no need to explain the stuggles)} Therefore, for task execution, we attach ropes to a 20\,cm pole to increase leverage; this extender is present in trajectory optimization and in real demonstration. We target a position on a pole set up at the target coordinates and we estimate distance-from-target from video. Our task as well as an example wiggle and execution is pictured in Fig \ref{fig:system_overview}; Figure \ref{fig:drake_sim} visualizes our task setup in Drake.
+
+% \subsection{How to Wiggle}\label{sec:howtowiggle}
+% \JI{Remove the `We do not claim ... optimal ...' You can put that in the limitations and future work section.}
+% We do not claim to have found the optimal method for performing system identification for ropes, however we motivate our method through the empirical study of several trajectories and their performance. We include the results and discussion of this in sections \ref{sec:obs_wiggle} and \ref{sec:wiggleablation}. Qualities of a feasible wiggle or set of wiggles were:
+% \begin{itemize}
+%     \item a planar motion; 
+%     \item usable for a wide range of possible ropes;
+%     \item designed to accentuate characteristic rope properties;
+%     \item designed to limit the chance for singularities.
+% \end{itemize}
+
+% Importantly, we attempt to observe whether some wiggles would result in our model consistently misclassifying some ropes, leading to degenerate results, which we describe above as a singularity. 
+
+% We implemented the same wiggle trajectory for deployment with the robot and in simulation. In simulation, we extracted the 3D capsule locations directly. For a rope with $n$ links, one simulated wiggle would generate a vector of information of ($3\times n \times t$) where $t$ is the number of recorded timesteps. 
+
+% With real-world wiggle demonstrations, we collect videos of the demonstration with the Zed 2i camera, we post-process the video with SAM 2 \cite{ravi2024sam2}. We then fit keypoint markers along the rope that correspond to the links in simulations for $\Phi$'s input. \TODO{@Karthik is there anything else we should add about the post-processing?}
+
+%Dynamic rope manipulation requires understanding rope properties to predict their behavior under different actions. Humans naturally perform rope system identification (SysId) by observing the object through safe, exploratory actions like lifting, dangling, or shaking an object to sense its weight, stiffness, and dynamics. 
+\waglong{} has two stages: (1) a safe observation, a predefined \emph{wiggle} trajectory, excites rope dynamics for parameter estimation, and (2) task execution using trajectories optimized with these estimated parameters. Crucially, we decouple observation from task execution, enabling our task-agnostic system identification to support multiple manipulation tasks without retraining.
+
+\wag{} observes rope motion through a wiggle trajectory to obtain visual features $\mathcal{O}$. The System Identification (SysId) model $\Phi: \mathcal{O} \rightarrow \Xi$ predicts rope system parameters $\xi \in \Xi$ (e.g., stiffness, damping, mass distribution, link count). Given a task goal $g \in \mathcal{G}$ (e.g., 3D target position) and rope parameters $\xi$, an action policy $\Pi: \Xi \times \mathcal{G} \rightarrow \mathcal{A}$ generates a robot trajectory $\vec{a} \in \mathcal{A}$. The complete pipeline is as follows: 
+\begin{enumerate}
+    \item execute wiggle on real rope
+    \item $\Phi$ predicts $\hat{\xi}$ from observations
+    \item $\Pi$ optimizes trajectory $\vec{a}$ given $\hat{\xi}$ and $g$
+    \item execute trajectory
+\end{enumerate}
+
+We maintain a task corpus $\mathcal{T}$ of learned policies, each optimized for different manipulation tasks (e.g., target striking and lobbing). The shared input structure of $\mathcal{T}$ is enabled by the task-agnostic nature of our SysId model.
+% In this work, we focus primarily on 3D target striking.
+Figure~\ref{fig:pipeline} illustrates the complete system architecture.
+
+\subsection{Action Policy Optimization $\Pi$} \label{sec:cmaes-traj}
+
+Each task in the corpus requires a policy $\Pi_{\text{task}}: \Xi \times \mathcal{G} \rightarrow \mathcal{A}$ that maps rope parameters and goals to executable trajectories. 
+%%%%%% this is already stated in the intro as motivation, we only need a short reminder.
+%Training such policies directly on physical robots is impractical, and dynamic rope manipulation involves rapid, high-jerk motions where failures can damage equipment or create safety hazards. Therefore, 
+To avoid real-world trial and error, we optimize trajectories in simulation using predicted rope parameters $\hat{\xi}$ from the adaptation model~(\ref{phi_NN}). 
+%%%% Readers won't care CPU vs. GPU unless its motivated. 
+%However, physics-based simulators capable of accurately modeling deformable object dynamics, including self-collision, contact, and complex material properties, are typically CPU-bound and limited in parallelization. 
+We use Drake~\cite{drake} for high-fidelity rope simulation.
+%%%%% Don't bash Drake (or any prior work). This could also sound like we're just incompetent.
+%, but its computational constraints rule out reinforcement learning approaches such as PPO that require multiples thousands of samples. Instead,
+We employ data-efficient, derivative-free optimization that can discover effective trajectories within a few hundred simulations per rope-task pair.
+
+\subsubsection*{Task Setup}
+We choose three toy tasks to represent our task corpus: 3D point striking, lobbing, and draping shown in Figure~\ref{fig:drake_sim}. The lobbing task is motivated by controlled placement strategies in deformable object manipulation ~\cite{chen2022garment}. 3D point striking is the most complex to solve because it needs to minimize distance to a difficult-to-reach object; however, the other two tasks require more multi-objective optimization. Described fully in Section~\ref{sec:cmaes_traj}, both draping and lobbing have a more complex reward consisting of minimizing the distance of multiple points for draping and maintaining a position for draping. Our task setup (Figure~\ref{fig:drake_sim}) uses a UFactory xArm 7 robot manipulator~\cite{ufactory2022xarm7}. For all tasks, we attach ropes to a 20\,cm pole extender to increase the moment arm, the xArm's joint velocity limits require this leverage for dynamic motions like whipping. The target is positioned at the top of a vertical pole in the simulation. We track the rope tip (final link) position and minimize its 3D Euclidean distance to the target as our optimization objective. 
+
+
+\begin{figure}[t]
+    \centering % trim,clip below to crop and thus shrink the figure vertically a bit (probably better done in an image editor) [width=\columnwidth,trim={0 200 0 100},clip]
+    \includegraphics[width=\columnwidth]{images/drake_setups.pdf}
+    \caption{Our task setups in Drake. \textcolor{SeaGreen}{Green:} rope extender for leverage. \textcolor{RedOrange}{Red:} target location is the top of the pole. \textcolor{Blue}{Blue:} targets locations}
+    \label{fig:drake_sim}
+\end{figure}
+
+% \subsubsection*{Task Setup}
+% We choose three toy tasks to represent our task corpus: 3D point striking, lobbing, and draping shown in Figure~\ref{fig:drake_sim}. The lobbing task is motivated by controlled placement strategies in deformable object manipulation~\cite{chen2022garment}. 3D point striking is the most complex to solve because it needs to minimize distance to a difficult-to-reach object, however, the other two tasks require more multi-objective optimization.
+
+\subsubsection*{CMA-ES Trajectory Optimization}\label{sec:cmaes_traj}
+We use Covariance Matrix Adaptation Evolution Strategy (CMA-ES)~\cite{cmaes}, a stochastic optimization algorithm that adapts its search distribution based on the success of sampled solutions. At each iteration, CMA-ES-traj (CMA-ES for trajectory optimization) samples a population of candidate trajectories from a multivariate Gaussian distribution, evaluates their fitness (task error in simulation), and updates the distribution's mean and covariance matrix to concentrate search around promising regions. This adaptive mechanism enables efficient exploration of the trajectory space without requiring gradient information from a hand-tuned reward function. We design a simple reward function for each of our three tasks. For 3D pole striking, we minimize distance of the tip location to the pole location; for lobbing, we employ a staggered reward function that first rewards the policy for nearing the target location and then we mix a reward for it to remain at that location, encouraging slow and controlled lobbing; finally, for draping, we employ a more complicated staggered reward that relies first on rewarding for the middle joint of the rope to near the top of the wall, for the tip to move forward and then finally for the tip to go to a lower point while the midpoint still targets the top of the wall. In all models, we also provide a penalty for any actions where the pole or rope nears unwanted regions such as the robot's base, the wall and ceiling. We found that these multifaceted reward structures provided the signal necessary for CMA-ES-traj to optimize and find successful trajectories. 
+
+We parameterize trajectories using three sequential waypoints in the robot's joint space and interpolate between joint positions with a cubic spline to generate smooth, continuous joint trajectories subject to velocity constraints. This low-dimensional representation (21D parameters for a 7-DOF arm) significantly reduces the search space compared to direct optimization of full trajectories. For the more complex tasks, we limited exploration to planar actions where we only optimize the three joints that move in the plane of motion (9D parameters). Joint-space waypoints also avoid inverse kinematics singularities and naturally respect joint limits and velocity constraints, both critical for a controlled execution on physical hardware. For each rope parameter set $\xi$ and goal $g$, CMA-ES-traj runs for up to 25 iterations with 60 samples per iteration. 
+
+
+\subsubsection*{Simulation Setup and Implementation}
+We represent ropes in simulation using the link, ball joint chains, following Lim et al.~\cite{lim_planar_2022}, where the rope is modeled as a series of rigid spheres connected by ball joints with stiffness $k$ and damping parameters $c$. Each link has an associated mass and radius for accurate inertial calculations. We vary the rope parameters across the ranges to match real ropes in household and industrial settings.  In experiments, we trained on parameters in the ranges in Table~\ref{tab:in_domain_results}. 
+% Following Lim et al.~\cite{lim_planar_2022}, we also include lead weights at the rope tip since many tasks are motivated by the intention to cast an object (the lead) using a rope.
+Following Lim et al.~\cite{lim_planar_2022}, we also include lead weights at the rope tip to model common real-world scenarios where ropes are used to cast or manipulate attached objects. The lead weight also increases the effective reach by providing momentum to the rope tip during dynamic motions.
+
+% This belongs in the experiments section. We are proposing something that should work on any robot. It's only in our experiments do we test on one.
+
+% \subsubsection*{Neural Network Policy ($\Phi$-NN)} \label{sec:neural-network-adaptation}
+
+% \TODO{@Abhinav could you put some details of the adaptation policy here. I don't think we need too much architecture details, just a high level of design reasoning and general layer structure}
+
+% \TODO{We should cite \citet{liang_rapid_2024} somewhere because they claim to be the first to use CNN for RMA} 
+
+% Our adaptation model $\Phi: \mathcal{O} \rightarrow \Xi$ estimates rope system parameters $\xi$ from observed motion. Unlike prior work that performs system identification during task execution \cite{lim_planar_2022, kuroki_gendom_2025}, we use a predefined safe trajectory (a ``wiggle'') that excites rope dynamics without risk of entanglement or damage, enabling rapid parameter inference before task execution.
+
+% \subsubsection{Observation Collection via Safe Exploration}
+
+% We collect observations by executing a planar wiggle trajectory $\tau_{\text{wiggle}}$ that oscillates the rope end-effector (Fig.~\ref{fig:rope5}). The wiggle is designed to excite key rope properties (stiffness, damping, inertia) through controlled acceleration while maintaining visibility for tracking. We record rope motion for 400 frames at 60 FPS ($\sim$6.7 seconds). In Section~\ref{sec:wiggleablation}, we show that the specific wiggle trajectory is not critical, any motion that sufficiently excites rope dynamics performs comparably.
+
+% In simulation, we model ropes using Drake's ball-capsule representation: a serial chain of rigid spheres connected by ball joints with stiffness $k$ and damping $c$ \cite{drake, lim_planar_2022}. For a rope with $N$ links, we extract 3D positions of ball centers $\{p_t^{(i)} \in \mathbb{R}^3\}_{i=1}^N$ at each timestep $t$. We project these to 2D image coordinates using a calibrated (measurable extrinsics) pinhole camera model with ZED Mini intrinsics. We adopt a single-camera, 2D projection approach because: (1) single-camera setups are practical for real-world deployment, (2) depth estimation adds complexity without significant benefit for parameter discrimination, and (3) 2D observations contain sufficient temporal dynamics for inferring rope parameters (validated empirically in Section~\ref{sec:full-sim-pipeline}).
+
+% The planar wiggle design serves dual purposes: it ensures all links remain visible from a single viewpoint, and it simplifies real-world tracking by avoiding out-of-plane motion that would require multi-view reconstruction or depth sensing.
+
+% \textbf{Feature Engineering.} We apply feature engineering to the projected 2D points. We first normalize positions relative to the first link: $\tilde{p}_t^{(i)} = p_t^{(i)} - p_t^{(1)}$. This provides two benefits: (1) the first link is attached to the robot end-effector (effectively a fixed hinge for the wiggle), conveying minimal information about rope properties, and (2) normalization provides robustness to small calibration shifts between simulation and real-world deployment. We then compute angular features from normalized positions:
+% \begin{itemize}
+%     \item Angles: $\theta_t^{(i)} = \text{atan2}(\tilde{p}_t^{(i)})$ relative to first link
+%     \item Angular velocity: $\omega_t = \nabla_t \theta_t$ (unwrapped, $\sigma=1.0$, kernel size 5)
+%     \item Angular acceleration: $\alpha_t = \nabla_t^2 \theta_t$ (unwrapped, $\sigma=1.5$, kernel size 7)
+% \end{itemize}
+% where temporal derivatives use centered finite differences with Gaussian smoothing. The observation sequence is $\mathcal{O} = \{\tilde{p}_t, \theta_t, \omega_t, \alpha_t\}_{t=1}^{400}$. While linear velocity and acceleration features ($v_t, a_t$) improve performance marginally in simulation, they degrade real-world performance due to noise amplification from differentiation, so we exclude them.
+
+% \subsubsection{Network Architecture and Sim-to-Real Training}
+
+% \textbf{Architecture.} $\Phi$ consists of a temporal convolutional encoder followed by an MLP. The encoder applies three 1D convolutional blocks along the temporal dimension, each with kernel size 8, followed by layer normalization, GELU activation, average pooling (stride 2), and dropout (0.3). After adaptive pooling to fixed length, a linear layer produces embedding $e \in \mathbb{R}^{256}$. An MLP with hidden dimensions [128, 64] maps $e$ to normalized parameters $\hat{\xi} \in [0,1]^9$. We predict 9 parameters: number of links, rope length, ball damping, rope radius, mass per unit length, link scale, lead mass, lead radius, and ball stiffness. The model has 1.2M parameters.
+
+% \textbf{Domain Randomization.} Real-world observations differ from simulation in three ways: camera calibration errors, tracking noise, and recording delays. We apply domain randomization to bridge this gap:
+% \begin{itemize}
+%     \item \textit{Calibration noise}: Gaussian noise ($\sigma=2$\,cm) on camera position and lookat point
+%     \item \textit{Tracking noise}: Anisotropic noise (0-3 pixels base) with higher longitudinal than lateral variance, temporally correlated ($\alpha=0.8$) to mimic segmentation + keypoint detection errors during processing the "wiggle video" in real.
+%     \item \textit{Trajectory padding}: Randomly pad 0-20 frames at trajectory start to simulate delayed recording.
+% \end{itemize}
+
+% \textbf{Curriculum Masking.} To prevent overfitting to specific temporal windows and improve robustness to partial observations, we apply progressive block masking during training. From epoch 50 onwards, we mask random contiguous blocks of frames (50 frames per block), increasing from 1-2 blocks (epochs 50-200) to 7 blocks (epochs 400-500). We also apply beginning-biased masking (epochs 200-400) where blocks are preferentially masked near trajectory start, forcing the model to rely on end-of-motion dynamics. Masked frames are set to zero.
+
+% \textbf{Training.} We train on 9000 simulated ropes with parameters sampled uniformly from ranges in Table~\ref{tab:param-ranges}. We use MSE loss on normalized parameters, Adam optimizer with initial learning rate $10^{-3}$, cosine annealing schedule, 5-epoch warmup, and batch size 32. Training runs for 500 epochs with validation on 1000 held-out ropes.
+
+\subsection{Adaptation Model $\Phi$}\label{phi_NN}
+
+Dynamic manipulation requires rope-specific trajectories; different ropes behave fundamentally differently based on their stiffness, mass distribution, and damping. We optimize trajectories in simulation (Section~\ref{sec:cmaes-traj}), but this requires knowing the rope's physical parameters. Real ropes lack specification sheets, so we infer parameters from observed behavior. Our safe wiggle is designed to excite rope dynamics through low-risk, repeatable motion, decoupling system identification from potentially dangerous task execution.
+
+% We train $\Phi$ on simulated ropes with known ground truth parameters to learn the mapping between motion patterns and physical properties. Simulation provides us the ability to collect data at scale and provide the supervised signal unavailable from real ropes, where internal properties cannot be directly measured. Once trained, $\Phi$ enables rapid deployment: observe a new rope's wiggle, estimate parameters, and use them for trajectory optimization.
+
+The mapping from dynamic rope motion to underlying physical parameters is complex and non-linear. Manually deriving such relationships is intractable. We therefore frame this as a supervised learning problem: train $\Phi$-NN ($\Phi$-neural network) to predict parameters from observed motion. Simulation is essential for generating training data because it provides ground truth parameter labels that are impossible to obtain from real ropes (since we cannot directly measure internal properties like stiffness or damping). We generate a diverse dataset of simulated ropes spanning the parameter ranges in Table~\ref{tab:in_domain_results}, each with known ground truth. Once trained on this data, $\Phi$-NN generalizes to new ropes. We integrate it into our pipeline by observing a wiggle ($\mathcal{O}$), estimating parameters ($\Phi(\mathcal{O}) \rightarrow\hat{\xi}$), and then using $\hat{\xi}$ for trajectory optimization.
+
+\subsubsection{Observation Collection with Safe Action}\label{sec:howtowiggle}
+
+We collect observations by executing a planar wiggle trajectory $\omega_{\text{wiggle}}$ that oscillates the rope with the robot end-effector. The wiggle is designed to excite key rope properties (stiffness, damping, inertia, etc.) through controlled acceleration while maintaining visibility for tracking. In our wiggle exploration section~(\ref{tab:wiggle_ablation}), we suggest that the specific wiggle trajectory is not critical; any motion that sufficiently excites rope dynamics performs comparably. We do not provide any theoretical guarantees on the safety of the wiggle action, but we use this terminology to suggest that a known, more controlled action is less likely to cause physical damage to surroundings and itself.
+
+% \begin{table*}[t]
+% \centering
+% \footnotesize
+% \caption{Wiggle Study: Mean Absolute Error across wiggle variants (1000 test samples). Ablations 1-6 vary amplitude (20°, 30°) and frequency (0.5-1.0 Hz). Ablations 7-8 use random predefined trajectories. Main is the primary model used in all experiments. Color gradient shows relative performance per parameter.}
+% \label{tab:wiggle_ablation}
+% \resizebox{\textwidth}{!}{
+% \begin{tabular}{l|c|c|c|c|c|c|c|c|c}
+% \toprule
+% \textbf{Parameter} & \textbf{Abl 1} & \textbf{Abl 2} & \textbf{Abl 3} & \textbf{Abl 4} & \textbf{Abl 5} & \textbf{Abl 6} & \textbf{Abl 7} & \textbf{Abl 8} & \textbf{Main} \\
+% \midrule
+% Number of links & \cellcolor{green!40}0.122 & \cellcolor{green!30}0.127 & \cellcolor{yellow!30}0.225 & \cellcolor{yellow!20}0.205 & \cellcolor{yellow!20}0.206 & \cellcolor{orange!30}0.360 & \cellcolor{red!50}2.098 & \cellcolor{red!30}1.453 & \cellcolor{green!60}0.098 \\
+% Rope length (m) & \cellcolor{green!40}0.007 & \cellcolor{green!20}0.013 & \cellcolor{yellow!30}0.017 & \cellcolor{yellow!20}0.015 & \cellcolor{yellow!30}0.018 & \cellcolor{orange!20}0.022 & \cellcolor{red!50}0.057 & \cellcolor{red!30}0.028 & \cellcolor{green!60}0.006 \\
+% Ball damping (N·s/m) & \cellcolor{green!60}0.010 & \cellcolor{green!20}0.033 & \cellcolor{yellow!30}0.038 & \cellcolor{green!30}0.018 & \cellcolor{green!20}0.031 & \cellcolor{red!50}0.096 & \cellcolor{yellow!30}0.036 & \cellcolor{orange!30}0.040 & \cellcolor{green!60}0.010 \\
+% Rope radius (m) & \cellcolor{green!60}0.002 & \cellcolor{green!20}0.003 & \cellcolor{green!20}0.003 & \cellcolor{green!20}0.003 & \cellcolor{yellow!30}0.004 & \cellcolor{red!50}0.006 & \cellcolor{green!20}0.003 & \cellcolor{orange!30}0.004 & \cellcolor{green!60}0.002 \\
+% Mass per unit length (kg/m) & \cellcolor{green!60}0.006 & \cellcolor{green!20}0.010 & \cellcolor{green!20}0.010 & \cellcolor{yellow!30}0.013 & \cellcolor{yellow!20}0.012 & \cellcolor{orange!20}0.014 & \cellcolor{red!50}0.019 & \cellcolor{orange!30}0.014 & \cellcolor{green!40}0.007 \\
+% Link extra scale & \cellcolor{green!40}0.153 & \cellcolor{yellow!20}0.160 & \cellcolor{yellow!20}0.160 & \cellcolor{yellow!30}0.179 & \cellcolor{yellow!30}0.169 & \cellcolor{red!50}0.241 & \cellcolor{orange!30}0.205 & \cellcolor{red!30}0.208 & \cellcolor{green!60}0.152 \\
+% Lead mass (kg) & \cellcolor{green!60}0.005 & \cellcolor{yellow!20}0.011 & \cellcolor{yellow!30}0.014 & \cellcolor{green!30}0.008 & \cellcolor{yellow!20}0.011 & \cellcolor{orange!30}0.018 & \cellcolor{red!30}0.021 & \cellcolor{red!50}0.016 & \cellcolor{green!60}0.005 \\
+% Lead radius (m) & \cellcolor{green!20}0.008 & \cellcolor{green!20}0.008 & \cellcolor{green!20}0.008 & \cellcolor{green!20}0.008 & \cellcolor{green!20}0.008 & \cellcolor{green!20}0.008 & \cellcolor{green!60}0.007 & \cellcolor{green!20}0.008 & \cellcolor{green!20}0.008 \\
+% Ball stiffness (N/m) & \cellcolor{green!40}0.118 & \cellcolor{orange!30}0.257 & \cellcolor{red!30}0.258 & \cellcolor{yellow!30}0.224 & \cellcolor{yellow!30}0.244 & \cellcolor{orange!30}0.336 & \cellcolor{red!50}0.388 & \cellcolor{red!30}0.322 & \cellcolor{green!60}0.111 \\
+% \bottomrule
+% \end{tabular}}
+% \end{table*}
+
+\begin{table*}[t]
+\centering
+\footnotesize
+\caption{Wiggle Study: Mean Absolute Error across wiggle variants (1000 test samples). Ablations systematically vary wiggle parameters: Abl 1-3 use 20° amplitude at 0.5, 0.75, 1.0 Hz; Abl 4-6 use 30° amplitude at 0.5, 0.75, 1.0 Hz; Abl 7-8 use random predefined trajectories. Main is the primary wiggle (joint 6 oscillation of the xArm) used throughout all experiments. Color gradient indicates relative performance per parameter (green = best, red = worst).}
+\label{tab:wiggle_ablation}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{l|c|c|c|c|c|c|c|c|c}
+\toprule
+\textbf{Parameter} & \textbf{Abl 1} & \textbf{Abl 2} & \textbf{Abl 3} & \textbf{Abl 4} & \textbf{Abl 5} & \textbf{Abl 6} & \textbf{Abl 7} & \textbf{Abl 8} & \textbf{Main} \\
+ & \scriptsize{20°, 0.5Hz} & \scriptsize{20°, 0.75Hz} & \scriptsize{20°, 1.0Hz} & \scriptsize{30°, 0.5Hz} & \scriptsize{30°, 0.75Hz} & \scriptsize{30°, 1.0Hz} & \scriptsize{Random 1} & \scriptsize{Random 2} & \scriptsize{Joint 6} \\
+\midrule
+Number of links & \cellcolor{green!40}0.122 & \cellcolor{green!30}0.127 & \cellcolor{yellow!30}0.225 & \cellcolor{yellow!20}0.205 & \cellcolor{yellow!20}0.206 & \cellcolor{orange!30}0.360 & \cellcolor{red!50}2.098 & \cellcolor{red!30}1.453 & \cellcolor{green!60}0.098 \\
+Rope length (m) & \cellcolor{green!40}0.007 & \cellcolor{green!20}0.013 & \cellcolor{yellow!30}0.017 & \cellcolor{yellow!20}0.015 & \cellcolor{yellow!30}0.018 & \cellcolor{orange!20}0.022 & \cellcolor{red!50}0.057 & \cellcolor{red!30}0.028 & \cellcolor{green!60}0.006 \\
+Ball damping (N·s/m) & \cellcolor{green!60}0.010 & \cellcolor{green!20}0.033 & \cellcolor{yellow!30}0.038 & \cellcolor{green!30}0.018 & \cellcolor{green!20}0.031 & \cellcolor{red!50}0.096 & \cellcolor{yellow!30}0.036 & \cellcolor{orange!30}0.040 & \cellcolor{green!60}0.010 \\
+Rope radius (m) & \cellcolor{green!60}0.002 & \cellcolor{green!20}0.003 & \cellcolor{green!20}0.003 & \cellcolor{green!20}0.003 & \cellcolor{yellow!30}0.004 & \cellcolor{red!50}0.006 & \cellcolor{green!20}0.003 & \cellcolor{orange!30}0.004 & \cellcolor{green!60}0.002 \\
+Mass per unit length (kg/m) & \cellcolor{green!60}0.006 & \cellcolor{green!20}0.010 & \cellcolor{green!20}0.010 & \cellcolor{yellow!30}0.013 & \cellcolor{yellow!20}0.012 & \cellcolor{orange!20}0.014 & \cellcolor{red!50}0.019 & \cellcolor{orange!30}0.014 & \cellcolor{green!40}0.007 \\
+Link extra scale & \cellcolor{green!40}0.153 & \cellcolor{yellow!20}0.160 & \cellcolor{yellow!20}0.160 & \cellcolor{yellow!30}0.179 & \cellcolor{yellow!30}0.169 & \cellcolor{red!50}0.241 & \cellcolor{orange!30}0.205 & \cellcolor{red!30}0.208 & \cellcolor{green!60}0.152 \\
+Lead mass (kg) & \cellcolor{green!60}0.005 & \cellcolor{yellow!20}0.011 & \cellcolor{yellow!30}0.014 & \cellcolor{green!30}0.008 & \cellcolor{yellow!20}0.011 & \cellcolor{orange!30}0.018 & \cellcolor{red!30}0.021 & \cellcolor{red!50}0.016 & \cellcolor{green!60}0.005 \\
+Lead radius (m) & \cellcolor{green!20}0.008 & \cellcolor{green!20}0.008 & \cellcolor{green!20}0.008 & \cellcolor{green!20}0.008 & \cellcolor{green!20}0.008 & \cellcolor{green!20}0.008 & \cellcolor{green!60}0.007 & \cellcolor{green!20}0.008 & \cellcolor{green!20}0.008 \\
+Ball stiffness (N/m) & \cellcolor{green!40}0.118 & \cellcolor{orange!30}0.257 & \cellcolor{red!30}0.258 & \cellcolor{yellow!30}0.224 & \cellcolor{yellow!30}0.244 & \cellcolor{orange!30}0.336 & \cellcolor{red!50}0.388 & \cellcolor{red!30}0.322 & \cellcolor{green!60}0.111 \\
+\bottomrule
+\end{tabular}}
+\end{table*}
+
+% In simulation, for a rope with $N$ links, we extract 3D positions of the link centers $\{p_t^{(i)} \in \mathbb{R}^3\}_{i=1}^N$ at each timestep $t$. We project these to 2D image coordinates using a calibrated pinhole camera model. We adopt a single-camera, 2D projection approach because: (1) single-camera setups are practical for real-world deployment, \TODO{I don't think we can make this claim, probably should just delete. We could say we hypothesize that 3D wiggle movement will not aid with parameter discrimination, but I mention something to the contrary in experiments}(2) depth estimation adds complexity without significant benefit for parameter discrimination, and (3) 2D observations contain \TODO{hard to define sufficient?} sufficient temporal dynamics for inferring rope parameters (validated empirically in Section~\ref{sec:full-sim-pipeline}).
+
+In simulation, for a rope with $N$ links, we extract 3D positions of the link centers $\{p_t^{(i)} \in \mathbb{R}^3\}_{i=1}^N$ at each timestep $t$. We project these to 2D image coordinates using a calibrated pinhole camera model. Since our wiggle is planar by design, depth information is largely redundant, the rope motion occurs primarily in the image plane and all links remain visible from a single fixed viewpoint. Our wiggle ablation study (Section~\ref{sec:wiggleablation}) demonstrates that various planar wiggles achieve comparable parameter estimation performance, suggesting that temporal dynamics from in-plane motion discriminate rope properties. While stereo setups with non-planar motion could potentially improve inference of damping and stiffness, the single-camera approach balances simplicity with empirically validated performance (Section~\ref{sec:fullpipeline}).
+
+% \textbf{Feature Engineering.} We apply feature engineering to the projected 2D points. We first normalize positions relative to the first link: $\tilde{p}_t^{(i)} = p_t^{(i)} - p_t^{(1)}$. This provides two benefits: (1) the first link is attached to the robot end-effector (effectively a fixed hinge for the wiggle), conveying minimal information about rope properties, and (2) normalization provides robustness to small calibration shifts between simulation and real-world deployment. \TODO{not sure if we need mathematical def of angular stuff, reader probably knows?} We then compute angular features from normalized positions: angles $\theta_t^{(i)} = \text{atan2}(\tilde{p}_t^{(i)})$ relative to the first link, angular velocity $\omega_t = \nabla_t \theta_t$, and angular acceleration $\alpha_t = \nabla_t^2 \theta_t$, where temporal derivatives use centered finite differences with Gaussian smoothing. While derivative features (linear and angular velocities and accelerations) improve performance in simulation, they degrade real-world performance due to noise amplification from differentiation. For simulation training we include all features; for real-world deployment we use only position and angle features, and the resulting observation sequence is $\mathcal{O} = \{\tilde{p}_t, \theta_t\}$.
+
+\textbf{Feature Engineering.} We normalize positions relative to the first link: $\tilde{p}_t^{(i)} = p_t^{(i)} - p_t^{(1)}$. This provides two benefits: (1) the first link is attached to the robot end-effector (effectively a fixed hinge), conveying minimal rope-specific information, and (2) normalization provides robustness to calibration shifts between simulation and deployment. We then compute angular features from normalized positions, including angles relative to the first link and their temporal derivatives (angular velocity and acceleration) using centered finite differences with Gaussian smoothing. While derivative features improve performance in simulation, they amplify noise in real-world tracking. For simulation training we include all features; for real-world deployment we use only position and angle features: $\mathcal{O} = \{\tilde{p}_t, \theta_t\}$.
+
+\subsubsection{Network Architecture and Sim-to-Real Training}
+
+% \textbf{Architecture.} $\Phi$-NN consists of a temporal convolutional encoder followed by an MLP. The encoder applies multiple 1D convolutional blocks along the temporal dimension, each followed by layer normalization, GELU activation, average pooling, and dropout. After adaptive pooling to fixed length, a linear layer produces a compact embedding. An MLP maps this embedding to normalized parameters $\hat{\xi} \in [0,1]^9$. \TODO{we can just cite the table again probably} We predict 9 parameters: number of links, rope length, ball damping, rope radius, mass per unit length, link scale, lead mass, lead radius, and ball stiffness.
+
+% \textbf{Domain Randomization.} Real-world observations differ from simulation in three ways: camera calibration errors, tracking noise, and recording delays. We apply domain randomization to bridge this gap: (1) calibration noise adds Gaussian perturbations to camera position and lookat point, (2) tracking noise applies anisotropic, temporally-correlated noise to mimic segmentation and keypoint detection errors, with higher longitudinal than lateral variance, and (3) trajectory padding randomly adds frames at trajectory start to simulate delayed recording.
+
+% \textbf{Curriculum Masking.} To prevent overfitting to specific temporal windows and improve robustness to partial observations, we apply progressive block masking during training. We mask random contiguous blocks of frames, increasing the number of masked blocks as training progresses. We also apply beginning-biased masking where blocks are preferentially masked near trajectory start, forcing the model to rely on end-of-motion dynamics. Masked frames are set to zero.
+
+% \TODO{appendix?}\textbf{Implementation.} The encoder uses three 1D convolutional blocks with kernel size 8, stride 1, and dropout rate 0.3. Average pooling uses stride 2. The embedding dimension is 256, and the MLP uses hidden dimensions [128, 64]. The model has 1.2M parameters. For domain randomization: calibration noise uses $\sigma=2$\,cm, tracking noise spans 0-3 pixels with temporal correlation $\alpha=0.8$, and trajectory padding adds 0-20 frames. For curriculum masking: masking begins at epoch 50 with 50-frame blocks, increasing from 1-2 blocks (epochs 50-200) to 7 blocks (epochs 400-500); beginning-biased masking is applied during epochs 200-400. We train on 9000 simulated ropes with parameters sampled uniformly from Table~\ref{tab:param-ranges}. Training uses MSE loss, Adam optimizer with initial learning rate $10^{-3}$, cosine annealing schedule, 5-epoch warmup, and batch size 32 for 500 epochs. Validation uses 1000 held-out ropes. We record rope motion for 400 frames at 60 FPS. Angular velocity uses unwrapped finite differences with Gaussian smoothing ($\sigma=1.0$, kernel size 5); angular acceleration uses $\sigma=1.5$ and kernel size 7.
+
+\textbf{Architecture and Training Strategy.} $\Phi$-NN consists of a temporal convolutional encoder followed by an MLP that maps observations to normalized rope parameters $\hat{\xi} \in [0,1]^9$ (Table~\ref{tab:in_domain_results}).
+
+To bridge the sim-to-real gap, we apply domain randomization in three ways: (1) calibration noise perturbs camera position and lookat point, (2) tracking noise applies anisotropic, temporally-correlated noise mimicking segmentation errors, with higher longitudinal than lateral variance, and (3) trajectory padding randomly adds frames at trajectory start to simulate delayed recording. Additionally, we apply progressive curriculum masking during training to prevent overfitting to specific temporal windows. We mask random contiguous blocks of frames, increasing the number of masked blocks as training progresses, and apply beginning-biased masking to force the model to rely on end-of-motion dynamics.
+
+\subsection{Real-World Deployment}
+
+Our complete system is designed for real-world deployment on physical robots for ropes with unknown quantitative parameters. The deployment pipeline follows our two-stage methodology: (1) execute wiggle and extract visual observations, (2) $\Phi$-NN estimates rope parameters $\hat{\xi}$, (3) optimize trajectory using $\hat{\xi}$ in simulation, (4) execute trajectory on the robot, and (5) measure task performance. The key challenges are obtaining visual observations compatible with $\Phi$'s training data and accurately measuring task error in metric space.
+
+\textbf{Wiggle Observation.} We use a ZED Mini 2i camera positioned to match the calibrated pinhole camera from simulation. For the first frame, we segment the rope using Grounding SAM~\cite{ren2024grounded}, apply color-based filtering for refinement, and fit a spline to the extracted rope mask to represent the rope centerline. We then compute the cumulative arc-length along this centerline and resample points at uniformly spaced distances to obtain 2D keypoints. Co-Tracker~\cite{karaev2410cotracker3} tracks these points across all wiggle frames. Tracked 2D positions are normalized relative to the first link and converted to angular features using the same pipeline as simulation. For real-world deployment, we use only position and angle features ($\tilde{p}_t$, $\theta_t$) to avoid noise amplification from temporal derivatives. Domain randomization during $\Phi$'s training (calibration noise, tracking noise) ensures robustness to real-world imperfections.
+
+\textbf{Trajectory Execution and Evaluation.} After $\Phi$-NN predicts parameters ($\hat{\xi}$), we optimize a trajectory in Drake with CMA-ES as explained in ~\ref{sec:cmaes-traj} and execute it on the xArm 7. To measure task error, we track the rope endpoint and target using HSV-based color filtering in the camera feed. The ZED camera's depth estimates convert 2D detections to 3D metric coordinates, allowing us to compute the minimum distance between rope endpoint and target.
+
+
+% \subsection{Task \TODO{corpus}}
+% \subsubsection{CMA-ES Optimized Trajectories (CMA-ES-traj)}
+% Drake has slow generation speeds and limited parallelism capabilities on the computational resources we had access to compared to other simulators such as Genesis and Newton \cite{Genesis, newtonphysicsengine}. \JI{Stop explaining the research story---tell those over drinks at a conference. :) Readers just want to why you did something (not why you didn't do everything else) and how it worked. So here, `We use data-efficient methods based on Drake...' (also, avoid sounding like you're bashing Drake or any cited work)} This motivated us to use less data-intensive methods for trajectory optimization. Therefore, we opted to use Covariance Matrix Adaptation Evolution Strategy (CMA-ES) \cite{cmaes} for our final experiments over neural-network-based optimization methods like a multi-arm bandit.
+
+% For our tasks, we simplify the trajectory complexity by predicting three way-points in joint space for the arm to target. We use cubic spline interpolation to calculate joint positions and velocities in both simulation and on the real robot. Using this method also limits common real to sim discrepancies or concerns when using IK solutions and 3D coordinate way-points. We limit joint-velocities in simulation by rejecting invalid samples for CMA-ES. We note that future extensions may find success using Multi-Objective CMA-ES \cite{zhao2025multiobjectivecovariancematrixadaptation} to steer the model towards finding successful trajectories that also avoid velocity violation and high jerk. Safety constraints in dynamic settings are inherently difficult, and so we chose not to tackle this separately complex optimization problem.
+% \subsubsection{Multi-Arm Bandit} \label{mab}
+% Another model that fits the structure of the Task \TODO{corpus}, with an input of just the rope system and a trajectory output, is the multi-arm bandit algorithm. We explored such methods and were able to generate accurate trajectories with high consistency for a wide range of ropes based on the rope parameters. However, this method was enabled by the parallelism capabilities of the Genesis simulations. As noted in section \ref{sec:oursim}, we observed a breakdown in the realism of rope simulations especially in more dynamic systems. Data-intensive methods such as multi-arm bandits do not practically scale to higher-fidelity simulators such as Drake. We also observe that multi-arm bandits and similar RL systems required considerable reward tuning which will struggle to scale to more complex rope tasks such as those proposed by \TODO{cite Krishna's Knot Flying paper}. \JI{Are you going to show experiments and result with MAB? If not, do not discuss it.}
+
+\section{Experiments and Results}
+
+We perform a series of experiments to evaluate the efficacy of our adaptation model, the transferability of rope system parameters from one dynamic context to another, and the full-pipeline accuracy of our system-identification-enabled zero-shot manipulation optimization method. We perform our tests on a diverse range of ropes and a chain. The chain represents an out-of-distribution example of a rope-behaving object, though we note that ropes are more accurately represented as ball joints than chains which would be closer to an alternating hinge joint. We describe the five ropes in Table \ref{tab:rope_descriptions} and the ropes can be seen in Fig. \ref{fig:ropes}. Our contribution lies in the ability of our system identification method to reliably produce informative system parameters. Therefore, we directly test the conveyed information from the wiggles, the simulation precision, the transferability from one dynamic context to another of the predicted system parameters, and the importance of system identification for task roll-out in real. 
+
+
+
+\begin{table}[t]
+\centering
+\caption{In-distribution parameter ranges and estimation accuracy. Left: training distribution bounds for each rope parameter. Right: prediction error on 1000 held-out test samples.}
+\label{tab:in_domain_results}
+\begin{tabular}{lccc|cc}
+\toprule
+& \multicolumn{3}{c}{\textbf{Parameter Range}} & \multicolumn{2}{c}{\textbf{Estimation Error}} \\
+\cmidrule(lr){2-4} \cmidrule(l){5-6}
+\textbf{Parameter} & \textbf{Min} & \textbf{Max} & \textbf{Units} & \textbf{MAE} & \textbf{Rel. Error (\%)} \\
+\midrule
+Number of links & 20 & 26 & --- & 0.098 & 0.44 \\
+Rope length & 0.45 & 0.65 & m & 0.006 & 1.13 \\
+Ball damping & 0.001 & 0.05 & N·s/m & 0.010 & 33.73 \\
+Ball stiffness & 0.05 & 1.0 & N/m & 0.111 & 33.82 \\
+Rope radius & 0.003 & 0.015 & m & 0.002 & 36.37 \\
+Mass per unit len & 0.02 & 0.12 & kg/m & 0.007 & 62.56 \\
+Lead mass & 0.02 & 0.12 & kg & 0.005 & 45.2 \\
+Lead radius & 0.015 & 0.045 & m & 0.008 & 28.81 \\
+Link extra scale & 50 & 120 & \% & 0.152 & 19.85 \\
+\midrule
+\multicolumn{4}{l|}{\textbf{Overall}} & \textbf{0.045} & \textbf{30.7} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure} 
+\includegraphics[width=\columnwidth]{images/ropes_narrow.jpg}
+\caption{Five ropes types used in experiments. In order: \textcolor{Brown}{Brown}, \textcolor{Dandelion}{Yellow}, \textcolor{Red}{Red}, \textcolor{Orange}{Orange}, and \textcolor{CadetBlue}{Chain}.}\label{fig:ropes} % Note: we need to label the colors for colorblind readers and black-and-white printouts.
+\end{figure}
+
+
+\begin{table}[t]
+\centering
+\caption{Estimation of parameters, material, and physical description of test ropes}
+\label{tab:rope_descriptions}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Rope} & \textbf{Material} & \textbf{Stiffness} & \textbf{Damping} & \textbf{Weight} & \textbf{Radius} \\
+& & & & \textbf{(kg/m)} & \textbf{(mm)} \\
+\midrule
+\textcolor{Brown}{Brown} & Twine & Slack & Low & 0.013 & 6 \\
+\textcolor{Dandelion}{Yellow} & Cotton & Stiff & Medium & 0.011 & 5 \\
+\textcolor{Red}{Red} & Cotton & Slack & Low & 0.033 & 9.5\\
+\textcolor{Orange}{Orange} & Polyester & Stiff & High & 0.082 & 12.7\\
+\textcolor{CadetBlue}{Chain} & Steel & Slack & Low & 0.52 & 4.8$\times$18\\
+% Add your data rows here
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Adaptation Model Evaluation}
+
+We evaluate $\Phi$-NN on three criteria: parameter estimation accuracy, robustness to distribution shift, and transferability to downstream tasks. All experiments use the model trained on 9000 simulated ropes with domain randomization enabled.
+
+\subsubsection{Parameter Estimation Accuracy and Robustness}
+
+\textbf{In-Domain Performance.} On 1000 test samples in simulation, $\Phi$-NN achieves 30.7\% aggregate relative error across all 9 parameters (Table~\ref{tab:in_domain_results}). The model accurately estimates geometric properties (rope length, number of links) with errors below 1.1\%. Inertial and damping properties observable only through dynamic motion prove more challenging, with mass per unit length showing the highest error. Stiffness, radius, and lead parameters fall in the mid-range. This distribution reflects the fundamental challenge of inferring mass distribution and damping from 2D projected motion. Note that relative errors are inflated for parameters with small absolute ranges, for instance, predicting mass per unit length as 0.0016 kg/m versus 0.001 kg/m yields 60\% relative error, yet these values produce similar rope behavior and can be compensated by other parameters due to multicollinearity in the physical model.
+
+
+\textbf{Out-of-Distribution Robustness.} We test generalization by extending 4 parameters beyond training bounds: ball damping $\in [0.1, 1.5]$, mass per unit length $\in [0.05, 0.08]$, lead mass $\in [0.05, 0.2]$, and ball stiffness $\in [1.0, 1.5]$. On 1000 new test samples with 1-4 OOD parameters, the model exhibits stable relative error at 45-46\%, compared to 30.7\% in-domain. However, all OOD parameters show 100\% saturation, the model clamps predictions to training bounds rather than extrapolating. For example, ball damping predictions saturate at [0.016, 0.089] when targets span [0.100, 1.499]. This reflects a fundamental limitation: neural networks trained on bounded distributions cannot reliably extrapolate beyond observed ranges. While this limits applicability to ropes with drastically different properties, downstream trajectory optimization can compensate for bounded parameter errors more easily than unbounded extrapolations, and the saturated predictions still provide useful initialization compared to random sampling (Section~\ref{sec:fullpipeline}).
+
+% \begin{figure}[t]
+%     \centering
+%     \includegraphics[width=\columnwidth]{images/ood_analysis.png}
+%     \caption{Relative error by number of out-of-distribution parameters. Performance degrades gracefully from 30.7\% (in-domain) to 45-46\% (OOD).}
+%     \label{fig:ood_analysis}
+% \end{figure}
+
+% \textbf{Observation Robustness.} \label{sec:wiggleablation}We train 6 additional models using different planar wiggles varying oscillation amplitude (20°, 30°) and frequency (0.50-1.0 Hz). Performance remains consistent across all wiggles (Table~\ref{tab:wiggle_ablation}). While individual ablations may perform marginally better on specific parameters (e.g., Ablation 1 achieves lowest error on mass and stiffness), no single wiggle dominates across all parameters, and relative error remains within 20-30\% range for most geometric and inertial properties. This validates the design principle from Section~\ref{sec:howtowiggle}: any trajectory sufficiently exciting rope dynamics enables accurate parameter inference, and the specific wiggle choice is not critical to model performance. 
+
+\textbf{Observation Robustness.} \label{sec:wiggleablation}We train 8 additional models using different planar wiggles: 6 systematically varying amplitude (20°, 30°) and frequency (0.5-1.0 Hz), and 2 random trajectories (Table~\ref{tab:wiggle_ablation}). The main wiggle achieves best overall performance, with Ablation 1 (20°, 0.5 Hz) close behind. Performance remains consistent across planar wiggles that sufficiently excite rope dynamics, no single wiggle dominates all parameters. Random trajectories (Ablations 7-8) show degraded performance on complex parameters. This validates our design principle: planar wiggles with adequate excitation enable accurate parameter inference regardless of specific trajectory. We hypothesize that stereo setups with depth cameras with non-planar motion could further improve inference of certain parameters like damping and stiffness.
+
+
+\subsubsection{Transferability to Downstream Tasks}
+
+% Parameter-wise accuracy is necessary but insufficient, predicted parameters must work together to enable successful task execution. We validate transferability through two experiments: motion fidelity \TODO{(do predicted parameters reproduce rope dynamics?) and task-level performance (do they enable trajectory optimization?).}
+Parameter-wise accuracy alone is insufficient, predicted parameters must work together to enable task execution. We validate transferability through motion fidelity (whether predicted parameters reproduce rope dynamics under different motions) and task-level performance (whether they enable effective trajectory optimization).
+
+\textbf{Baseline: $\Phi$-CMAES.} To benchmark $\Phi$-NN, we implement an optimization-based baseline that directly fits simulation parameters to observed motion. Given a real wiggle trajectory (2D tracked points over time), $\Phi$-CMAES runs CMA-ES optimization to search the parameter space. Each iteration samples candidate parameter sets, simulates the wiggle in Drake with those parameters, projects the simulated 3D rope to 2D, and minimizes pixel-wise distance to the real trajectory (plus joint angle and velocity terms to aid convergence). We run 60 samples per iteration for 50 iterations. Unlike $\Phi$-NN, which relies on learned priors from training data, $\Phi$-CMAES performs brute-force parameter search without assumptions about rope behavior, thereby intentionally overfitting the rope to the wiggle. This makes it slower (3000 simulations vs. one forward pass) but potentially more robust to objects with dynamics far outside the training distribution, e.g., chains, where rigid dynamics differ significantly from flexible ropes. $\Phi$-NN's learned priors help it generalize across typical ropes but may hinder performance on fundamentally different deformable objects.
+
+\textbf{Motion Fidelity.} We test whether predicted parameters capture rope dynamics beyond static accuracy. For 10 real ropes (5 types with 10g and 30g leads), we predict parameters from wiggle A, simulate a different wiggle B with those parameters, perform the same wiggle B with the real rope, and compare via Fourier frequency analysis and point-wise trajectory matching (Fig.~\ref{fig:pointwise-comparison}, Fig.~\ref{fig:fourier}, Appendix table 1). Both $\Phi$-NN and $\Phi$-CMAES achieve 0.95 average frequency correlation (Pearson correlation coefficient to measure linear correlation between the real and simulated frequencies), capturing dominant motion characteristics. 
+% $\Phi$-NN achieves 44 px/frame average error versus 47 px/frame for $\Phi$-CMAES, both substantially outperforming random parameters (112 px/frame). 
+$\Phi$-NN achieves 5.4 cm/frame average error versus 5.8 cm/frame for $\Phi$-CMAES, both substantially outperforming random parameters (13.6 cm/frame).
+Notably, $\Phi$-CMAES performs better on the chain (0.99 vs. 0.78 correlation), whose dynamic behavior differs significantly from rope training data distribution, demonstrating when optimization-based fitting is preferable. However, $\Phi$-NN generalizes reliably across typical rope variations without per-rope re-optimization.
+
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.8\columnwidth]{images/overlay_sim_to_robot.pdf}
+    \caption{Real and simulation comparison for $\Phi$-NN benchmarking and $\Phi$-CMA-ES on an unseen dynamic motion.}
+    \label{fig:pointwise-comparison}
+\end{figure}
+
+\begin{figure} 
+\includegraphics[width=0.92\columnwidth]{images/fourier_good_text_size.png}
+\caption{Fourier frequency distributions on the Red (45cm, 10g lead) rope with simulated predictions from $\Phi$-CMA-ES and $\Phi$-NN on a test set motion. Appendix tab. 1; similar trends can be seen across ropes.}\label{fig:fourier}
+\end{figure}
+% \ref{tab:phi_comparison} shows full results
+
+\textbf{Task-Level Validation.} We first validate in simulation that predicted parameters enable downstream trajectory optimization. For 100 random simulated ropes, we predict parameters with $\Phi$-NN, optimize trajectories using those predictions (CMA-ES-traj, Section~\ref{sec:cmaes-traj}), and measure task error (Table~\ref{tab:sim-full}). Trajectories optimized with predicted parameters achieve 2.1 cm median error versus 1.2 cm with ground truth and 12.8 cm with random in-distribution parameters. Predicted parameters provide 6$\times$ improvement over uninformed baselines while remaining within 0.9 cm of ground truth performance. This demonstrates that parameter estimation errors do not compound catastrophically, suggesting $\Phi$-NN provides sufficient information for control, validating the two-stage pipeline design.
+
+\subsection{Action Policy Optimization Evaluation} \label{sec:cma-es-traj-eval}
+
+The trajectory returned by CMA-ES ~\ref{sec:cmaes_traj} consistently converges to a solution for all of our tasks when given 25 iterations for 3D Point Striking ($\sim$25 minutes), 50 iterations for lobbing ($\sim$120 minutes) and 15 iterations for draping ($\sim$60 minutes). For 3D point striking, the trajectory returned by CMA-ES found actions that resulted in an average rope tip distance of 0.8 cm from the goal position. We observe that with a dt in simulation of 0.01, and the high speeds of rope manipulation tasks, the ground-truth moment of minimum distance is often missed by a small margin likely meaning the method is achieving even lower true accuracy than our reported averages. For other tasks, CMA-ES was consistently able to find solutions, although we did find that without the correct reward and penalty structure, CMA-ES-traj often would push the limitations of the stability of Drake. 
+
+% \subsection{Adaptation Analysis}
+
+% While the ultimate measure of the accuracy and utility of the $\Phi$-NN is through the imparted improvement upon the task policy's information, we use multiple methods to analyze the accuracy of both $\Phi$-NN and $\Phi$-CMA-ES. In order to ascertain the ability for our model to imitate real rope behavior, for each rope prediction made by our model, we simulate the predicted system parameters on a wiggle demonstrated on the real rope. We then performed a Fourier analysis of the frequency distributions for each point for the real and simulated rope to understand the differences in the underlying movement. We observe similar trends across all predicted ropes as seen in Fig.~\ref{fig:fourier} and Table~\ref{tab:phi_comparison}: the dominant frequencies are captured but more nuanced movement as well as noise contained in the higher frequencies are not modeled as well. We note that the higher high-frequency tail is noted in all real examples we took, but the shape is different signaling a trend of hidden behavior beyond noise.
+
+% \subsubsection{Qualitative Observation of Simulation Results}\label{sec:obs_wiggle}
+% It is challenging to analyze predicted results in comparison to the real rope because the representation gap means there is no one-to-one relationship (e.g. no direct meaning of links or joint stiffness's in the real rope). Through observation of results of parameter predictions from both $\Phi$-NN and $\Phi$-CMA-ES, we find examples of the singularities hypothesized in section \ref{sec:howtowiggle}. The most prominent of such was a difficulty to distinguish between semi-stiff ropes with low lead masses and high-stiffness ropes with high lead masses which we will refer to as $\alpha$ and $\beta$ respectively. We were able to reduce the frequency of predictions with singularities in both models; in $\Phi$-CMA-ES we increased the total window with which we compared with the simulation and in $\Phi$-NN we did \TODO{@abhi how did we fix in NN}. For longer duration wiggles, $\beta$ maintains momentum in the tip more that $\alpha$ which is why we observe that a longer time window for optimization improves results. In comparison to prior work in rope system identification by \citet{kuroki_gendom_2025} they use a partial, slow lift of the rope to determine Young's Modulus and the Poisson ratio, their system parameters, but this demonstration would lack the imporant information garnered from longer horizon movements. Our experimental observations of the impact of wiggles on system identification quality motivate a yet further extension beyond our wiggle ablation in section \ref{sec:wiggleablation} designed specifically to excite certain traits of the rope. 
+
+% \subsubsection{Transferability and $\Phi$-NN vs. $\Phi$-CMA-ES} \label{sec:cmaes_vs_nn} We seek to isolate the difference in effectiveness of our adaptation models $\Phi$-NN and $\Phi$-CMA-ES. To do this, we use one wiggle to train $\Phi$-NN and to optimize $\Phi$-CMA-ES then we use the predicted parameters (and a random rope as a control) to compare our models to the real movement of the rope on a robot movement with high jerk. This test demonstrates the transferability of information from the system parameters to a new motion. This task verifies that, in the varied context of applications within the task \TODO{corpus}, parameters with and without singularities contain useful information and can still be useful.  We compare the Fourier frequencies of the four ropes and compare the distance-to-real scores. We tested this on all five ropes with lead weights of 5 and 30 grams to test the extrema. A summary of our results is found in Table \ref{tab:phi_comparison}. $\Phi$-CMA-ES is designed specifically to overfit the parameters to a specific demonstration. We observe that our $\Phi$-NN predicts similar parameters and demonstrates similar behavior to $\Phi$-CMA-ES. We therefore perform a study on $\Phi$-NN's ability to predict out-of-distribution rope system parameters.
+
+
+% \subsubsection{Out-Of-Distribution $\Phi$-NN}
+
+% \TODO{@Abhi}
+
+% \subsubsection{End-to-end Simulation Results}\label{sec:full-sim-pipeline}
+
+% To test our pipeline and $\Phi$-NN, we first evaluate our entire pipeline from end-to-end in simulation similar to \citet{liang_rapid_2024}. We extract 100 samples from our neural-network model's test set and predict estimated rope system parameters for each. Each set of ground truth system parameters is subsequently used to optimize a trajectory with one task policy. We then execute several different ropes with the same estimated trajectory: the ground truth rope, the predicted rope, and 100 random in-distribution ropes. We did not perform this experiment on our results with our $\Phi$-CMA-ES because that model's estimations are real-demonstration dependent and we would expect near-perfect parameter estimation for simulation results given enough iterations. We include our findings in Table \ref{tab:sim-full}. This table illustrates that parameter estimation from one action (the wiggle) is transferable to inform another policy with another task. Therefore in addition to the results described in section \ref{sec:cmaes_vs_nn} we demonstrate the transferability of the context of the system parameters from a safe action to a dynamic, riskier action. It also demonstrates that task accuracy is system parameter-dependent; one could hypothesize that in certain dynamic settings all ropes may behave the same, but we find that with the velocity constraints of our robot such behavior is not achieved. 
+
+\begin{table}[t]
+\centering
+\caption{Average of 100 adaptation-predicted ropes on full pipeline in simulation. Comparison of ground truth, predicted and 100 random in-distribution ropes. Here, CMA-ES-traj was optimized until 25 iterations \textit{or} min-distance of $<$1.5cm}
+\label{tab:sim-full}
+\begin{tabular}{
+    l 
+    S[table-format=2.1] 
+    S[table-format=1.2] 
+    S[table-format=3.1] 
+    S[table-format=2.1]
+    @{\,${}\pm{}$\,}
+    S[table-format=2.1]
+}
+\toprule
+ & {\textbf{Median}} & {\textbf{Min}} & {\textbf{Max}} & \multicolumn{2}{c}{\textbf{Mean}} \\
+\midrule
+\textbf{Ground Truth} & 1.2 & 0.25 & 21.6 & 1.4 & 2.2 \\
+\textbf{Predicted} & 2.1 & 0.27 & 70.2 & 5.7 & 11.5 \\
+\textbf{100 random ropes} & 12.8 & 0.14 & 104.3 & 16.3 & 12.1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Full Pipeline Results in Real} \label{sec:fullpipeline}
+
+We test on four in-domain ropes with a diverse range of system attributes as shown in Fig. \ref{fig:ropes} and described in Table \ref{tab:rope_descriptions} and one out-of-domain metal chain to understand the generalizability of our model. For each rope we tested a 45 cm, 55 cm, and 65 cm version (each with a 5g lead attached). We also tested each 45 cm rope with 10g, 20g, and 30g leads. The per-parameter breakdown is included in Table \ref{tab:rope_results}. We observe a similar trend as we did in simulation, wherein both $\Phi$-NN and $\Phi$-CMA-ES demonstrate useful system parameter outputs for task optimization. $\Phi$-CMA-ES, a na\"ive system adaptation through overfitting, serves as a useful benchmark to see how $\Phi$-NN performs. We observe that our method outperforms $\Phi$-CMA-ES on average for in-distribution models. It is expected that for out-of-distribution ropes, $\Phi$-CMA-ES would find a more suitable representation to explicitly match the rope. We use $\Phi$-Random to benchmark the impact of system parameters for task optimization and to demonstrate that the CMA-ES action trajectories are not producing one-action-fits-all ropes. $\Phi$ Random represents a set of 20 in-distribution ropes for which we optimized a trajectory and executed the optimized trajectory on our test ropes. This simulates what would happen if our system-identification were drastically incorrect or not performed, but the action was still educated (i.e. there is a rope with which this action would be optimal). We did not perform $\Phi$-Random tests on the chain for safety. Our test suggest that personalized parameters from $\Phi$-NN for each rope results in a four times accuracy improvement compared to the non-system-identified trials. We note, for our experiments when the pole was directly hit, the instantaneous velocity change made distance estimations incorrect; if the lead was on target (hitting the correct black tape in Fig.~\ref{fig:system_overview}) we marked a \textit{0.00} distance.
+
+
+\begin{table}[t]
+\footnotesize
+\centering
+\caption{Full pipeline results after rope wiggle, parameter prediction, CMA-ES-traj execution. Average distance (cm) from target reported from five task-policy rollouts per rope.}
+\label{tab:rope_results}
+\begin{threeparttable}
+\begin{tabular}{@{}l@{\;}c@{\;}c@{\;}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{}}
+\toprule
+\multirow{3}{*}{\textbf{Rope}} & \multirow{3}{*}{\textbf{Method}} & \multicolumn{6}{@{}c@{}}{\textbf{Length and Lead Weight}} & \multirow{3}{*}{\textbf{Avg}} \\
+\cmidrule(lr){3-8}
+& & \textit{45cm} & \textit{45cm} & \textit{45cm} & \textit{45cm} & \textit{55cm} & \textit{65cm} & \\
+& & \textit{5g} & \textit{10g} & \textit{20g} & \textit{30g} & \textit{5g} & \textit{5g} & \\
+\midrule
+\multirow{3}{*}{\textcolor{Brown}{Brown}} & $\Phi$-NN & 0.14 & 2.03 & 5.28 & 0.82 & \textit{0.00} & 2.07 & 1.72 \\
+ & $\Phi$-CMA-ES & \textit{0.00} & 0.61 & 8.86 & 5.24 & 0.20 & 4.43 & 3.22 \\
+ & $\Phi$-Random & 15.88 & 17.34 & 18.28 & 17.70 & 15.47 & 22.14 & 17.80 \\
+\midrule
+\multirow{3}{*}{\textcolor{Dandelion}{Yellow}} & $\Phi$-NN & 8.11 & 6.27 & 0.78 & 4.71 & 3.47 & \textit{0.00} & 3.89 \\
+ & $\Phi$-CMA-ES & 1.47 & 3.76 & 0.76 & 3.25 & 7.69 & 8.07 & 4.17 \\
+ & $\Phi$-Random & 14.65 & 15.85 & 16.50 & 16.97 & 14.98 & 19.25 & 16.37 \\
+\midrule
+\multirow{3}{*}{\textcolor{Red}{Red}} & $\Phi$-NN & \textit{0.00} & 15.96 & 0.91 & 1.37 & 0.33 & 4.27 & 3.81 \\
+ & $\Phi$-CMA-ES & \textit{0.00} & 3.19 & 2.34 & 7.18 & 1.39 & \textit{0.00} & 2.35 \\
+ & $\Phi$-Random & 17.63 & 15.23 & 16.95 & 16.59 & 14.05 & 18.17 & 16.44 \\
+\midrule
+\multirow{3}{*}{\textcolor{Orange}{Orange}} & $\Phi$-NN & 10.08 & 2.16 & 3.71 & \textit{0.00} & 11.45 & 1.33 & 4.79 \\
+ & $\Phi$-CMA-ES & \textit{0.00} & 8.65 & 1.50 & \textit{0.00} & 12.04 & 19.06 & 6.88 \\
+ & $\Phi$-Random & 10.90 & 9.99 & 11.82 & 13.51 & 8.00 & 9.06 & 10.55 \\
+\midrule
+\multirow{2}{*}{\textcolor{CadetBlue}{Chain*}} & $\Phi$-NN & 51.37 & 29.60 & 12.33 & 3.31 & 51.94 & 0.69 & 24.87 \\
+ & $\Phi$-CMA-ES & 3.86 & 0.63 & 2.65 & 1.55 & 4.46 & 6.68 & 3.30 \\
+\midrule
+\multicolumn{2}{@{}l@{}}{\textbf{Avg In-Domain ($\Phi$-NN)}} & 4.58 & 6.61 & 2.67 & 1.73 & 3.81 & 1.92 & 3.55 \\
+\multicolumn{2}{@{}l@{}}{\textbf{Avg In-Domain ($\Phi$-CMA-ES)}} & 0.37 & 4.05 & 3.37 & 3.92 & 5.33 & 7.89 & 4.16 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+    \item * out-of-domain
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+\subsubsection{Secondary Tasks: Lobbing and Draping}
+
+We include our in-real results from our secondary tasks in Table~\ref{tab:combined_tasks}. These examples demonstrate the ability of our pipeline to perform actions with more complex reward structures with system identification information as a strong prior. We use two metrics to assess success for both methods due to the multi-objective reward function. For lobbing, we consider it a full success if the rope tip both knocks a domino down and remains on the board (demonstrating a gentle lob onto the surface). We place the domino closer to the simulation robot to reflect that to knock an object over both humans and robots must estimate to overshoot striking the object. For the task of draping we judge a successful drape if it hangs over the wall (i.e. tip is over the wall and hanging) and secondary success is judged by the distance of the midpoint of the rope to the top of the wall which was used directly as a metric for CMA-ES-traj's reward function for this task. These additional experiments validate the theoretical construction of a task corpus $\mathcal{T}$ which consists of system-parameter informed models which are all informed by $\Phi$.
+
+\begin{table}[t]
+\centering
+\caption{Performance across lobbing and draping tasks with different parameter prediction methods.}
+\label{tab:combined_tasks}
+\begin{threeparttable}
+\begin{tabular}{@{}ll@{\hspace{1pt}}c@{\hspace{3pt}}c@{\hspace{8pt}}c@{\hspace{3pt}}c@{}}
+\toprule
+& & \multicolumn{2}{c@{\hspace{8pt}}}{\textbf{Lobbing}} & \multicolumn{2}{c}{\textbf{Draping}} \\
+\cmidrule(lr){3-4} \cmidrule(l){5-6}
+\textbf{Rope} & \textbf{Method} & \textbf{Target} & \textbf{Stay} & \textbf{Success} & \textbf{Distance (cm)} \\
+\midrule
+\multirow{2}{*}{\textcolor{Brown}{Brown}} 
+ & $\Phi$-NN & 67\% & 50\% & 67\% & 4.1 \\
+ & $\Phi$-CMA-ES & 83\% & 33\% & 83\% & 3.8 \\
+\addlinespace
+\multirow{2}{*}{\textcolor{Dandelion}{Yellow}} 
+ & $\Phi$-NN & 67\% & 17\% & 67\% & 7.4 \\
+ & $\Phi$-CMA-ES & 67\% & 50\% & 67\% & 4.1 \\
+\addlinespace
+\multirow{2}{*}{\textcolor{Red}{Red}} 
+ & $\Phi$-NN & 67\% & 17\% & 67\% & 3.6 \\
+ & $\Phi$-CMA-ES & 83\% & 50\% & 67\% & 4.8 \\
+\addlinespace
+\multirow{2}{*}{\textcolor{Orange}{Orange}} 
+ & $\Phi$-NN & 17\% & 0\% & 50\% & 3.4 \\
+ & $\Phi$-CMA-ES & 17\% & 17\% & 50\% & 3.5 \\
+\midrule
+\multicolumn{2}{l}{\textbf{Avg In-Domain ($\Phi$-NN)}} & 54\% & 21\% & 63\% & 4.6 \\
+\multicolumn{2}{l}{\textbf{Avg In-Domain ($\Phi$-CMA-ES)}} & 63\% & 38\% & 67\% & 4.1 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\small
+\item Averages for 6 configurations per rope; full results in appendix
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+
+
+
+
+
+% \section{RSS citations}
+
+% Please make sure to include \verb!natbib.sty! and to use the
+% \verb!plainnat.bst! bibliography style. \verb!natbib! provides additional
+% citation commands, most usefully \verb!\citet!. For example, rather than the
+% awkward construction 
+
+% {\small
+% \begin{verbatim}
+% \cite{kalman1960new} demonstrated...
+% \end{verbatim}
+% }
+
+% \noindent
+% rendered as ``\cite{kalman1960new} demonstrated...,''
+% or the
+% inconvenient 
+
+% {\small
+% \begin{verbatim}
+% Kalman \cite{kalman1960new} 
+% demonstrated...
+% \end{verbatim}
+% }
+
+% \noindent
+% rendered as 
+% ``Kalman \cite{kalman1960new} demonstrated...'', 
+% one can
+% write 
+
+% {\small
+% \begin{verbatim}
+% \citet{kalman1960new} demonstrated... 
+% \end{verbatim}
+% }
+% \noindent
+% which renders as ``\citet{kalman1960new} demonstrated...'' and is 
+% both easy to write and much easier to read.
+  
+% \subsection{RSS Hyperlinks}
+
+% This year, we would like to use the ability of PDF viewers to interpret
+% hyperlinks, specifically to allow each reference in the bibliography to be a
+% link to an online version of the reference. 
+% As an example, if you were to cite ``Passive Dynamic Walking''
+% \cite{McGeer01041990}, the entry in the bibtex would read:
+
+% {\small
+% \begin{verbatim}
+% @article{McGeer01041990,
+%   author = {McGeer, Tad}, 
+%   title = {\href{http://ijr.sagepub.com/content/9/2/62.abstract}{Passive Dynamic Walking}}, 
+%   volume = {9}, 
+%   number = {2}, 
+%   pages = {62-82}, 
+%   year = {1990}, 
+%   doi = {10.1177/027836499000900206}, 
+%   URL = {http://ijr.sagepub.com/content/9/2/62.abstract}, 
+%   eprint = {http://ijr.sagepub.com/content/9/2/62.full.pdf+html}, 
+%   journal = {The International Journal of Robotics Research}
+% }
+% \end{verbatim}
+% }
+% \noindent
+% and the entry in the compiled PDF would look like:
+
+% \def\tmplabel#1{[#1]}
+
+% \begin{enumerate}
+% \item[\tmplabel{1}] Tad McGeer. \href{http://ijr.sagepub.com/content/9/2/62.abstract}{Passive Dynamic
+% Walking}. {\em The International Journal of Robotics Research}, 9(2):62--82,
+% 1990.
+% \end{enumerate}
+% %
+% where the title of the article is a link that takes you to the article on IJRR's website. 
+
+
+% Linking cited articles will not always be possible, especially for
+% older articles. There are also often several versions of papers
+% online: authors are free to decide what to use as the link destination
+% yet we strongly encourage to link to archival or publisher sites
+% (such as IEEE Xplore or Sage Journals).  We encourage all authors to use this feature to
+% the extent possible.
+
+\section{Conclusion and Future Work}
+
+This paper introduces a novel, task-agnostic system identification method for rope manipulation. Through the use of a single safe action and the leveraging of simulation priors with a neural network model we can fit descriptive system parameters to a rope in real.  One limitation of our work is that there was a large amount of noise in segmentation and tracking in the real-to-sim transfer. Our current simulation environments have some limited capabilities to accurately represent real rope behavior such as kinks. We also recognize a time delay in execution due to optimization duration for CMA-ES-traj and are interested in exploring neural-network enabled action policies for faster execution.
+
+We believe there are many exciting future possibilities to fine-tune the system-identification accuracy. We hypothesize there exist wiggles that can excite the rope in a more targeted manner to isolate individual system parameters.  %While our method performs zero-shot manipulation, we recognize that each execution of our manipulation policy generates valuable information to fine-tune our system identification model and therefore, we propose that an System-Identification-adapter module could be created which incorporates information from sample demonstrations to improving the world understanding for other tasks as well as its own.
+
+% We are interested in expanding the methods that leverage the system parameters into learned methods such as RL and behavior cloning; we would also like to explore the effectiveness of using system parameter priors for iteration reduction for iterative methods. 
+
+% We also hypothesize that this method may have applications for other deformable objects such as textiles given an information rich simulation representation. Though we believe that the sim-to-real discrepancy in textiles may still be too large to ascertain similar informative SysId paramters.
+
+% \section{Conclusion} 
+% \label{sec:conclusion}
+
+
+
+\section*{Acknowledgments}
+% \TODO{ REMOVE THIS FOR ANONYMITY }
+This work used computational resources at Pittsburgh Supercomputing Center through allocation CIS251423 from the Advanced Cyberinfrastructure Coordination Ecosystem: Services \& Support (ACCESS) program, which is supported by U.S. National Science Foundation grants \#2138259, \#2138286, \#2138307, \#2137603, and \#2138296. \cite{accessgrant} 
+
+We also thank Professor Chris Atkeson for his advice on the paper and Alan Wang for his early work on this project.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+\clearpage
+\input supp
+
+\end{document}
+
+
+
+% Current motivations
+% - daily tasks (jump rope, tying knots, whip, sailing)
+% - emergency tasks (firemen, sea rescue)
+% - motivation for methods with more complex deformables
+
+% Why difficult 
+% - difficult task because of many degrees of freedom
+% - some limitations on robot capabilities
+% - IRP says: complex dynamics, complex object properties (and environment) --> therefore people study low precision tasks
+
+
+% Contributions
+%  - one-shot or fewer attempts at task
+
+
+
+
+
+% OLD related works
+
+
+
+% \subsection{Sim-to-Real Methods and System Identification for Ropes}
+% \todo{cite more sim-to-real works}
+% Sim-to-real transfer for deformable object manipulation has been approached through two primary strategies: domain randomization and system identification. Domain randomization methods like \citet{matas_simreal_2018} train policies across varied simulation parameters to achieve zero-shot cloth manipulation. While conceptually similar to our approach in avoiding real-world task iteration, their method differs fundamentally: they rely on broad parameter sweeps from real world collected data for training rather than explicit parameter estimation and focus on non-dynamic shape fitting and knotting tasks. We focus on dynamic tasks such as casting, lobbing and swinging where it is potentially unsafe and infeasible to collect large quantities of high quality real world data as they do. \TODO{add more clustering in the related works so that it cites a bunch of related works and then cites our differeces}
+
+% System identification approaches more directly align with our work by explicitly estimating physical parameters. Real2Sim2Real \cite{lim_planar_2022} optimizes simulator parameters to match observed trajectories for dynamic casting. However, their method requires thousands of physical experiments and complete pipeline re-execution for each new cable, whereas our approach performs system identification from a single safe wiggle and generalizes across multiple tasks without re-optimization. Recent work has extended system identification to neural prediction: GenORM \cite{kuroki_genorm_2025} and GenDOM \cite{kuroki_gendom_2025} condition policies on Young's modulus and Poisson's ratio estimated from point cloud observations during predefined lifting motions. Our work differs in three key ways: (1) we use higher-dimensional, rope-specific parameters rather than material properties alone—\citet{lim_planar_2022} argues that Young's modulus-based simulation creates discrepancies for ropes with leads, (2) we demonstrate transferability across multiple complex 3D manipulation tasks rather than single-stage planar goals, and (3) we systematically analyze how observation strategy (wiggle design) affects parameter prediction quality, which prior work does not explore.
+
+% \subsection{Dynamic Rope Manipulation Methods}
+% \TODO{tell what people do, add more works, focus less on iterative works and find others that do dynamics}
+% Iterative learning control refines control policies through repeated trials \cite{bristow_survey_2006}, a strategy we explicitly aim to replace with zero-shot execution. For dynamic rope manipulation, \citet{yamakawa_simple_2012, yamakawa_dynamic_2013} demonstrated algebraic deformation modeling and high-speed knotting through iterative refinement, while learning-based approaches such as \citet{nair_combining_2017} required tens of thousands of autonomous interactions to learn rope dynamics. Recent work by \citet{yu_shape_2022} combines offline training with online iterative adaptation, explicitly noting that model errors from insufficient training or changing object properties necessitate iterative refinement—precisely the limitation our system identification approach addresses.
+
+% The current state of the art for dynamic rope tasks lies in iterative residual policies. \citet{chi_iterative_2022} and \citet{zhang_robots_2024} achieve impressive results across a wide range of ropes and tasks through progressive refinement. Our method targets comparable accuracy without requiring iteration, addressing scenarios where repeated attempts pose risks of rope damage, equipment failure, or environmental hazards. The fundamental trade-off is clear: iterative methods achieve high accuracy through progressive correction, while our approach prioritizes safety and speed through informed initialization. Critically, our system identification module is task-agnostic—the same wiggle observation supports multiple downstream tasks—whereas iterative methods must perform multiple attempts for each new goal.
+
+% \subsection{Rapid Motor Adaptation}
+% \TODO{talk about it less as if we are copy pasting their idea}
+% Our work is inspired by the Rapid Motor Adaptation (RMA) framework \cite{kumar_rma_2021}, which trains policies with privileged environmental information in simulation while an adaptation module learns to infer these factors from sensor history at deployment. We extend RMA's core insight—decouple environment perception from task execution—to dynamic deformable object manipulation. However, our implementation differs in critical ways due to domain constraints.
+% \TODO{is to condense this into one paragraph and talk about all RMA works as the same}
+% RMA and its extensions \cite{qi_-hand_2022, liang_rapid_2024} perform online adaptation during task execution, continuously updating predictions from sensor streams. Dynamic rope manipulation, by contrast, involves rapid, high-jerk motions where the task completes in under one second—too fast for meaningful online adaptation. We therefore perform adaptation offline through a predefined safe action (the wiggle) before task execution. This design choice also enables task-agnostic system identification: unlike RMA, where observation and action spaces are tightly coupled to specific tasks, our adaptation module's output (rope parameters) supports multiple downstream policies without retraining. This is a fundamental architectural difference—RMA's adaptation module is task-specific, while ours builds a shared representation that generalizes across our task corpus.
+
+% Additionally, RMA typically operates in environments where privileged information (e.g., terrain friction, object mass) remains constant during deployment but varies across scenarios. For rope manipulation, the "privileged information" (rope parameters) can be directly observed through our wiggle, making explicit parameter estimation both feasible and more interpretable than implicit latent representations.
+
+% \subsection{Sim-to-Real Methods and System Identification for Ropes}
+% Sim-to-real transfer for deformable object manipulation has been approached through domain randomization and system identification. Domain randomization methods like \citet{matas_simreal_2018} achieved zero-shot cloth manipulation by training across varied simulation parameters, though they acknowledge that excessive randomization impairs learning and simulation fidelity for deformable dynamics remains limited. System identification approaches like Real2Sim2Real \cite{lim_planar_2022} optimize simulator parameters to match observed trajectories, achieving 8--14\,\% endpoint error for dynamic casting but requiring thousands of physical experiments and complete pipeline re-execution for each new cable. Recent work has extended system identification to explicit parameter estimation: GenORM \cite{kuroki_genorm_2025} and GenDOM \cite{kuroki_gendom_2025} condition policies on Young's modulus and Poisson's ratio estimated from point cloud observations during predefined lifting motions, though both focus on simple \JI{avoid ``simple'' due to what the word can imply.} single-stage tasks with primarily planar goals and do not analyze the impact which varying their demonstration has on parameter prediction. \citet{lim_planar_2022} argues that simulation relying on Young's modulus can cause discrepancies between behavior of simulated and real ropes and these parameters alone will struggle to capture the behavior of ropes with leads. Our method sidesteps explicit parameter identification by using higher dimensional, less strict representations directly from dynamic wiggle observations, enabling adaptation across multiple complex 3D manipulation tasks.
+% \subsection{Iterative Learning Methods}
+% Iterative learning control has been proven to be effective for robot manipulation tasks in which repeated trials refine control policies \cite{bristow_survey_2006}. For dynamic rope manipulation, the foundational work of \citet{yamakawa_simple_2012, yamakawa_dynamic_2013} demonstrated algebraic deformation modeling and high-speed knotting through iterative model refinement, while learning-based approaches such as \citet{nair_combining_2017} required tens of thousands of autonomous interactions to learn rope dynamics. Recent work by \citet{yu_shape_2022} combines offline training with online iterative adaptation, explicitly noting that model errors from insufficient training or changing object properties necessitate iterative refinement during manipulation. The current state of the art for dynamic rope tasks primarily lies in iterative residual policies. \citet{chi_iterative_2022} and \citet{zhang_robots_2024} determines actions for rope manipulation, highlighting the ability for their model to work with few iterations across a wide range of ropes and tasks. Our method aims to achieve similar dynamic tasks with comparable accuracy without requiring iteration, which in real-world scenarios could pose risks of damage to both the rope and the surrounding environment.
+% \subsection{Rapid Motor Adaptation}
+% Neural networks have proven effective for system identification in robotics, enabling efficient approximation of complex dynamics \cite{Ahmed2009SurrogateBasedAD, CNN_sysID}. Building on domain randomization for sim-to-real transfer \cite{tobin_domain_2017, peng_simtoreal_2018}, Rapid Motor Adaptation (RMA) \cite{kumar_rma_2021} trains policies with privileged environmental information in simulation while an adaptation module learns to infer these factors from sensor history at deployment, enabling real-time adaptation without iteration. Following RMA's success in locomotion, \citet{qi_-hand_2022} extended the approach to dexterous in-hand manipulation and \citet{liang_rapid_2024} applied it to general robotic arm tasks. This work expands predictive adaptation to dynamic deformable object manipulation, where both rope properties and manipulation strategies are inferred from simulation.
+
+% \section{Methods\TODO{ add separate Implementation}}
