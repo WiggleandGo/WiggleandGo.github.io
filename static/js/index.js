@@ -47,7 +47,7 @@ $(document).ready(function() {
 			autoplaySpeed: 3000,
     }
 
-		// Initialize all div with carousel class
+		// Initialize standard carousels (3-up)
     var carousels = bulmaCarousel.attach('.carousel', options);
 
     // Loop on each carousel initialized
@@ -83,5 +83,49 @@ $(document).ready(function() {
     $('#interpolation-slider').prop('max', NUM_INTERP_FRAMES - 1);
 
     bulmaSlider.attach();
+
+    // Task completion custom single-video slider
+    var taskSlider = document.getElementById('task-completion-slider');
+    if (taskSlider) {
+      var taskVideoFiles = [
+        './static/videos/daruma_block_1.mp4',
+        './static/videos/20260206_175555_trimmed.mp4',
+        './static/videos/20260206_181539_trimmed.mp4'
+      ];
+      var slide = document.getElementById('task-completion-slide');
+      var video = document.getElementById('task-completion-video');
+      var source = document.getElementById('task-completion-source');
+      var prevBtn = taskSlider.querySelector('.task-slider-prev');
+      var nextBtn = taskSlider.querySelector('.task-slider-next');
+      var currentIndex = 0;
+
+      function showTaskSlide(index, direction) {
+        if (!slide || !video || !source) return;
+        slide.classList.remove('slide-in-next', 'slide-in-prev');
+        if (direction === 'next') {
+          slide.classList.add('slide-in-next');
+        } else if (direction === 'prev') {
+          slide.classList.add('slide-in-prev');
+        }
+        source.src = taskVideoFiles[index];
+        video.load();
+        video.loop = true;
+        video.muted = true;
+        video.play().catch(function() {});
+      }
+
+      function stepTaskSlide(delta) {
+        currentIndex = (currentIndex + delta + taskVideoFiles.length) % taskVideoFiles.length;
+        showTaskSlide(currentIndex, delta > 0 ? 'next' : 'prev');
+      }
+
+      showTaskSlide(currentIndex);
+      if (prevBtn) {
+        prevBtn.addEventListener('click', function() { stepTaskSlide(-1); });
+      }
+      if (nextBtn) {
+        nextBtn.addEventListener('click', function() { stepTaskSlide(1); });
+      }
+    }
 
 })

@@ -18,7 +18,7 @@ body {
 
 
 .teaser .hero-body {
-  padding-top: 0;
+  padding-top: 3rem;
   padding-bottom: 3rem;
 }
 
@@ -120,12 +120,41 @@ body {
   border-radius: 10px;
   padding: 0;
   font-size: 0;
+  
 }
 
 .results-carousel video {
   margin: 0;
 }
 
+/* System Identification Intuition section spacing */
+.section-intuition .intuition-intro {
+  margin-bottom: 2.5rem;
+}
+
+.section-intuition .intuition-intro p {
+  max-width: 42em;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+.section-intuition .intuition-carousel-block {
+  margin-top: 3rem;
+}
+
+.section-intuition .intuition-carousel-block:first-of-type {
+  margin-top: 0;
+}
+
+.section-intuition .intuition-carousel-block h3 {
+  margin-bottom: 1rem;
+}
+
+.section-intuition .intuition-carousel-block .hero-body {
+  padding-top: 0;
+  padding-bottom: 0;
+}
 
 .interpolation-panel {
   background: #f5f5f5;
@@ -271,5 +300,85 @@ body {
 .results-carousel .video-with-label video {
   height: 100%;
   object-fit: cover;
+}
+
+/* One-video Task Completion slider */
+.task-completion-slider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.task-slides {
+  width: min(900px, 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.task-slide {
+  display: none;
+}
+
+.task-slide.is-active {
+  display: block;
+}
+
+.task-slide .video-with-label {
+  margin: 5px;
+  overflow: hidden;
+  border: 1px solid #bbb;
+  border-radius: 10px;
+  padding: 0;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.task-slide.slide-in-next {
+  animation: taskSlideInNext 0.35s ease;
+}
+
+.task-slide.slide-in-prev {
+  animation: taskSlideInPrev 0.35s ease;
+}
+
+@keyframes taskSlideInNext {
+  from {
+    opacity: 0;
+    transform: translateX(8%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes taskSlideInPrev {
+  from {
+    opacity: 0;
+    transform: translateX(-8%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.task-slider-btn {
+  background: #fff;
+  border: 1px solid #d9d9d9;
+  border-radius: 9999px;
+  width: 44px;
+  height: 44px;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #333;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.task-slider-btn:hover {
+  background: #f5f5f5;
 }
 

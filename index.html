@@ -104,7 +104,7 @@
               </span>
               <!-- Video Link. -->
               <span class="link-block">
-                <a href="#"
+                <a href="https://youtu.be/_J3R1QXX3bI"
                    class="external-link button is-normal is-rounded hero-landing-btn">
                   <span class="icon">
                       <i class="fab fa-youtube"></i>
@@ -169,26 +169,73 @@
   </div>
 </section>
 
-<!-- Wiggle based System Identification text section -->
+
 <section class="section">
   <div class="container is-max-desktop">
+    <!-- Abstract. -->
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
-        <h2 class="title is-3">Wiggle based System Identification</h2>
+        <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
-          <p>(Content about wiggle-based system identification.)</p>
+          <p>
+            Many robotic tasks are unforgiving; a single mistake in a dynamic throw can lead to unacceptable delays or unrecoverable failure. To mitigate this, we present a novel approach that leverages learned simulation priors to inform goal-conditioned dynamic manipulation of ropes for efficient and accurate task execution.
+          </p>
+          <p>
+            Related methods for dynamic rope manipulation either require large real-world datasets to estimate rope behavior or the use of iterative improvements on attempts at the task for goal completion. We introduce Wiggle and Go!, a system-identification, two-stage framework that enables zero-shot task rope manipulation. The framework consists of a system identification module that observes rope movement to predict descriptive physical parameters, which then informs an optimization method for goal-conditioned action prediction for the robot to execute zero-shot in the real.
+          </p>
+          <p>
+            Our method achieves strong performance across multiple dynamic manipulation tasks enabled by the same task-agnostic system identification module which offers seamless switching between different manipulation tasks, allowing a single model to support a diverse array of manipulation policies. We achieve a <i>3.55</i> cm average accuracy on 3D target striking in real using rope system parameters in comparison to 15.34 cm accuracy when our task model is not system-parameter-informed. We achieve a Pearson correlation coefficient of <i>0.95</i> between Fourier frequencies of the predicted and real ropes on an unseen trajectory.
+          </p>
         </div>
       </div>
     </div>
+    <!--/ Abstract. -->
+
+
+    <!-- Paper video. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Video</h2>
+        <div class="publication-video">
+          <iframe width="560" height="315" src="https://www.youtube.com/embed/_J3R1QXX3bI?si=5WnmENWNJFW7jd_x" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+    <!--/ Paper video. -->
   </div>
 </section>
 
-<!-- Color rope stacked videos carousel -->
-<section class="section">
+<section class="section section-intuition">
   <div class="container is-max-desktop">
-    <h2 class="title is-4 has-text-centered">Color rope stacked</h2>
-    <div class="hero-body">
-      <div class="container">
+    <div class="intuition-intro">
+      <h2 class="title is-3 has-text-centered">Pipeline Overview</h2>
+    </div>
+  <div class="columns is-centered has-text-centered">
+    <div class="column is-full">
+      <figure class="pipeline-figure">
+        <img src="./static/images/pipeline_figure2.png" alt="Wiggle and Go pipeline overview figure." style="display: block; width: 100%; height: auto;" />
+        <figcaption class="has-text-centered" style="margin-top: 0.75em;">
+          <b>The Wiggle and Go! pipeline:</b> We train a system identification neural network Φ-NN entirely in simulation. We perform a wiggle in real as an input for Φ-NN. The output of these parameters are used to optimize an action for a chosen task which is then executed in real. Items highlighted in <span style="color: green;">green</span> are the only elements of our procedure performed in real, once each.
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- System Identification Intuition: stacked video carousels -->
+<section class="section section-intuition">
+  <div class="container is-max-desktop">
+    <div class="intuition-intro">
+      <h2 class="title is-3 has-text-centered">System Identification Intuition</h2>
+      <p class="has-text-centered content">
+        This section shows the stacked videos of the varying rope parameters performed with the same wiggle motion. It helps us develop intuition about the rope behavior and how it changes with different parameters.
+      </p>
+    </div>
+
+    <div class="intuition-carousel-block">
+      <h3 class="title is-4 has-text-centered">Lead Mass, Length Varied Ropes Stacked</h3>
+      <div class="hero-body">
         <div id="color-rope-carousel" class="carousel results-carousel">
           <div class="item">
             <div class="video-with-label">
@@ -233,36 +280,15 @@
         </div>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- Stacked RGB videos carousel -->
-<section class="section">
-  <div class="container is-max-desktop">
-    <h2 class="title is-4 has-text-centered">Stacked RGB videos</h2>
-    <div class="hero-body">
-      <div class="container">
+    <div class="intuition-carousel-block">
+      <h3 class="title is-4 has-text-centered">Rope Varied; Length, Lead Mass Constant</h3>
+      <div class="hero-body">
         <div id="stacked-rgb-carousel" class="carousel results-carousel">
           <div class="item">
             <div class="video-with-label">
               <video autoplay muted loop playsinline height="100%">
-                <source src="./static/videos/cropped/stacked_45_5_rgb_video.mp4" type="video/mp4">
-              </video>
-              <span class="video-speed-label">1x</span>
-            </div>
-          </div>
-          <div class="item">
-            <div class="video-with-label">
-              <video autoplay muted loop playsinline height="100%">
                 <source src="./static/videos/cropped/stacked_45_10_rgb_video.mp4" type="video/mp4">
-              </video>
-              <span class="video-speed-label">1x</span>
-            </div>
-          </div>
-          <div class="item">
-            <div class="video-with-label">
-              <video autoplay muted loop playsinline height="100%">
-                <source src="./static/videos/cropped/stacked_45_20_rgb_video.mp4" type="video/mp4">
               </video>
               <span class="video-speed-label">1x</span>
             </div>
@@ -300,123 +326,78 @@
 
 <section class="section">
   <div class="container is-max-desktop">
-    <!-- Abstract. -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified">
-          <p>
-            Many robotic tasks are unforgiving; a single mistake in a dynamic throw can lead to unacceptable delays or unrecoverable failure. To mitigate this, we present a novel approach that leverages learned simulation priors to inform goal-conditioned dynamic manipulation of ropes for efficient and accurate task execution.
-          </p>
-          <p>
-            Related methods for dynamic rope manipulation either require large real-world datasets to estimate rope behavior or the use of iterative improvements on attempts at the task for goal completion. We introduce Wiggle and Go!, a system-identification, two-stage framework that enables zero-shot task rope manipulation. The framework consists of a system identification module that observes rope movement to predict descriptive physical parameters, which then informs an optimization method for goal-conditioned action prediction for the robot to execute zero-shot in the real.
-          </p>
-          <p>
-            Our method achieves strong performance across multiple dynamic manipulation tasks enabled by the same task-agnostic system identification module which offers seamless switching between different manipulation tasks, allowing a single model to support a diverse array of manipulation policies. We achieve a 3.55 cm average accuracy on 3D target striking in real using rope system parameters in comparison to 15.34 cm accuracy when our task model is not system-parameter-informed. We achieve a Pearson correlation coefficient of 0.95 between Fourier frequencies of the predicted and real ropes on an unseen trajectory.
-          </p>
-        </div>
-      </div>
-    </div>
-    <!--/ Abstract. -->
-
-    <!-- Introduction. -->
     <div class="columns is-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Introduction</h2>
-        <div class="content has-text-justified">
-          <p>(Introduction content from paper.)</p>
+      <div class="column is-full-width">
+        <h2 class="title is-3 has-text-centered">Drake task animation</h2>
+        <div class="hero-body" style="padding-top: 1rem;">
+          <iframe
+            src="./static/animations/rope_orange_65_5_nn_params_target_1.2_0.1_0.2.html"
+            title="Drake task animation"
+            width="100%"
+            height="620"
+            style="border: 1px solid #ddd; border-radius: 10px; background: #fff;"
+            loading="lazy">
+          </iframe>
+          <figcaption class="has-text-centered" style="margin-top: 0.75em;">
+            Try running me! Use your mouse and the controls menu to move the camera and reset the animation.
+          </figcaption>
         </div>
       </div>
     </div>
-
-    <!-- Paper video. -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Video</h2>
-        <div class="publication-video">
-          <p class="has-text-centered">(Video link to be added.)</p>
-        </div>
-      </div>
-    </div>
-    <!--/ Paper video. -->
   </div>
 </section>
 
 
 <section class="section">
   <div class="container is-max-desktop">
-
     <div class="columns is-centered">
-
-      <!-- Related Work. -->
       <div class="column is-full-width">
-        <div class="content">
-          <h2 class="title is-3">Related Work</h2>
-          <h3 class="title is-4">Rope Dynamics Through Data and Simulation</h3>
-          <p>(Content from paper.)</p>
-          <h3 class="title is-4">System Identification for Deformable Objects</h3>
-          <p>(Content from paper.)</p>
-          <h3 class="title is-4">Model Predictive Control and Dynamic Manipulation</h3>
-          <p>(Content from paper.)</p>
-          <h3 class="title is-4">Iterative Learning Methods</h3>
-          <p>(Content from paper.)</p>
-          <h3 class="title is-4">Adaptation Through Privileged Learning</h3>
-          <p>(Content from paper.)</p>
+        <h2 class="title is-3 has-text-centered">Full Pipeline Task Completions</h2>
+        <div class="hero-body" style="padding-top: 1.5rem;">
+          <div id="task-completion-slider" class="task-completion-slider">
+            <button class="task-slider-btn task-slider-prev" type="button" aria-label="Previous video">
+              &#10094;
+            </button>
+            <div class="task-slides">
+              <div id="task-completion-slide" class="task-slide is-active">
+                <div class="video-with-label">
+                  <video id="task-completion-video" autoplay muted loop playsinline preload="auto" width="100%">
+                    <source id="task-completion-source" src="./static/videos/daruma_block_1.mp4" type="video/mp4">
+                  </video>
+                  <span class="video-speed-label">1/8x</span>
+                </div>
+              </div>
+            </div>
+            <button class="task-slider-btn task-slider-next" type="button" aria-label="Next video">
+              &#10095;
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Method. -->
-    <div class="columns is-centered">
-      <div class="column is-full-width">
-        <h2 class="title is-3">Method</h2>
-        <h3 class="title is-4">Action Policy Optimization (Π)</h3>
-        <p>(Content from paper.)</p>
-        <h3 class="title is-4">Adaptation Model (Φ)</h3>
-        <p>(Content from paper.)</p>
-        <h3 class="title is-4">Real-World Deployment</h3>
-        <p>(Content from paper.)</p>
-      </div>
-    </div>
 
-    <!-- Experiments and Results. -->
-    <div class="columns is-centered">
-      <div class="column is-full-width">
-        <h2 class="title is-3">Experiments and Results</h2>
-        <h3 class="title is-4">Adaptation Model Evaluation</h3>
-        <p>(Content from paper.)</p>
-        <h3 class="title is-4">Action Policy Optimization Evaluation</h3>
-        <p>(Content from paper.)</p>
-        <h3 class="title is-4">Full Pipeline Results in Real</h3>
-        <p>(Content from paper.)</p>
-      </div>
-    </div>
-
-    <!-- Conclusion and Future Work. -->
-    <div class="columns is-centered">
-      <div class="column is-full-width">
-        <h2 class="title is-3">Conclusion and Future Work</h2>
-        <p>(Content from paper.)</p>
-      </div>
-    </div>
 
     <!-- Acknowledgments. -->
     <div class="columns is-centered">
       <div class="column is-full-width">
         <h2 class="title is-3">Acknowledgments</h2>
-        <p>(Content from paper.)</p>
+        <p>
+          This work used computational resources at Pittsburgh Supercomputing Center through allocation CIS251423 from the Advanced Cyberinfrastructure Coordination Ecosystem: Services & Support (ACCESS) program, which is supported by U.S. National Science Foundation grants #2138259, #2138286, #2138307, #2137603, and #2138296.  
+        </p>
+        <p>
+          We also thank Professor Chris Atkeson for his advice on the paper and Alan Wang for his early work on this project.
+        </p>
       </div>
     </div>
 
     <!-- Related Links. -->
     <div class="columns is-centered">
       <div class="column is-full-width">
-        <h2 class="title is-3">Related Links</h2>
-        <p>(Related links and resources.)</p>
+        <h2 class="title is-3">Author's Note</h2>
+        <p>If you like this work and are interested in collaborating, please reach out to me at <a href="mailto:ajakobss@cmu.edu">ajakobss@cmu.edu</a>. I am also actively applying for PhD programs, so if you know of any opportunities, please let me know!</p>
       </div>
     </div>
-
-  </div>
 </section>
 
 
