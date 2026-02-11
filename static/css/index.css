@@ -2,7 +2,6 @@ body {
   font-family: 'Noto Sans', sans-serif;
 }
 
-
 .footer .icon-link {
     font-size: 25px;
     color: #000;
@@ -155,3 +154,122 @@ body {
 #interpolation-image-wrapper img {
   border-radius: 5px;
 }
+
+/* Landing hero with video background - exactly one viewport */
+.hero-landing {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.hero-landing-video-wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.hero-landing-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  transform: translate(-50%, -50%);
+  object-fit: cover;
+  /* Slightly above center so video sits higher and fits viewport on entry */
+  /* object-position: center 25%; */
+  filter: contrast(1.1);
+}
+
+.hero-landing-video-wrap .video-speed-label {
+  bottom: 1rem;
+  right: 1rem;
+  left: auto;
+  z-index: 2;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-shadow: 0 0 4px rgba(0, 0, 0, 1), 0 1px 4px rgba(0, 0, 0, 1), 0 2px 8px rgba(0, 0, 0, 0.9);
+  background: rgba(0, 0, 0, 0.4);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.hero-landing-body {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-landing-title,
+.hero-landing-authors {
+  color: #fff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.hero-landing-authors a {
+  color: #fff !important;
+  text-decoration: none;
+}
+
+.hero-landing-authors a:hover {
+  color: rgba(255, 255, 255, 0.85) !important;
+  text-decoration: underline;
+}
+
+.hero-landing-btn {
+  background: transparent !important;
+  border: 1px solid #fff !important;
+  color: #fff !important;
+}
+
+.hero-landing-btn .icon,
+.hero-landing-btn .ai {
+  color: #fff !important;
+}
+
+.hero-landing-btn:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: #fff !important;
+  color: #fff !important;
+}
+
+/* White speed label overlay on videos */
+.video-with-label {
+  position: relative;
+  display: block;
+  width: 100%;
+  font-size: 0;
+}
+
+.video-with-label video {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.video-speed-label {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  z-index: 1;
+  font-size: 0.9rem;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.results-carousel .video-with-label {
+  width: 100%;
+  height: 100%;
+}
+
+.results-carousel .video-with-label video {
+  height: 100%;
+  object-fit: cover;
+}
+

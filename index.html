@@ -42,54 +42,19 @@
 </head>
 <body>
 
-<nav class="navbar" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
-    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-    </a>
+<section class="hero hero-landing">
+  <div class="hero-landing-video-wrap">
+    <video class="hero-landing-video" autoplay muted loop playsinline>
+      <source src="./static/videos/daruma_block_1.mp4" type="video/mp4">
+    </video>
+    <span class="video-speed-label">1/8x</span>
   </div>
-  <div class="navbar-menu">
-    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
-      <a class="navbar-item" href="#">
-      <span class="icon">
-          <i class="fas fa-home"></i>
-      </span>
-      </a>
-
-      <div class="navbar-item has-dropdown is-hoverable">
-        <a class="navbar-link">
-          More Research
-        </a>
-        <div class="navbar-dropdown">
-          <a class="navbar-item" href="https://nerfies.github.io">
-            Nerfies
-          </a>
-          <a class="navbar-item" href="https://hypernerf.github.io">
-            HyperNeRF
-          </a>
-          <a class="navbar-item" href="https://latentfusion.github.io">
-            LatentFusion
-          </a>
-          <a class="navbar-item" href="https://photoshape.github.io">
-            PhotoShape
-          </a>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</nav>
-
-
-<section class="hero">
-  <div class="hero-body">
+  <div class="hero-body hero-landing-body">
     <div class="container is-max-desktop">
       <div class="columns is-centered">
         <div class="column has-text-centered">
-          <h1 class="title is-1 publication-title">Wiggle and Go! System Identification for Zero-Shot Dynamic Rope Manipulation</h1>
-          <div class="is-size-5 publication-authors">
+          <h1 class="title is-1 publication-title hero-landing-title">Wiggle and Go! System Identification for Zero-Shot Dynamic Rope Manipulation</h1>
+          <div class="is-size-5 publication-authors hero-landing-authors">
             <span class="author-block">
               <a href="#">Arthur Jakobsson</a><sup>1</sup>,</span>
             <span class="author-block">
@@ -111,17 +76,17 @@
             </span>
           </div>
 
-          <div class="is-size-5 publication-authors">
+          <div class="is-size-5 publication-authors hero-landing-authors">
             <span class="author-block"><sup>1</sup>Robotics Institute, Carnegie Mellon University,</span>
             <span class="author-block"><sup>2</sup>The University of North Carolina at Chapel Hill</span>
           </div>
 
           <div class="column has-text-centered">
-            <div class="publication-links">
+            <div class="publication-links hero-landing-links">
               <!-- PDF Link. -->
               <span class="link-block">
                 <a href="#"
-                   class="external-link button is-normal is-rounded is-dark">
+                   class="external-link button is-normal is-rounded hero-landing-btn">
                   <span class="icon">
                       <i class="fas fa-file-pdf"></i>
                   </span>
@@ -130,7 +95,7 @@
               </span>
               <span class="link-block">
                 <a href="#"
-                   class="external-link button is-normal is-rounded is-dark">
+                   class="external-link button is-normal is-rounded hero-landing-btn">
                   <span class="icon">
                       <i class="ai ai-arxiv"></i>
                   </span>
@@ -140,7 +105,7 @@
               <!-- Video Link. -->
               <span class="link-block">
                 <a href="#"
-                   class="external-link button is-normal is-rounded is-dark">
+                   class="external-link button is-normal is-rounded hero-landing-btn">
                   <span class="icon">
                       <i class="fab fa-youtube"></i>
                   </span>
@@ -150,7 +115,7 @@
               <!-- Code Link. -->
               <span class="link-block">
                 <a href="https://github.com/WiggleandGo/WiggleandGo.github.io"
-                   class="external-link button is-normal is-rounded is-dark">
+                   class="external-link button is-normal is-rounded hero-landing-btn">
                   <span class="icon">
                       <i class="fab fa-github"></i>
                   </span>
@@ -160,7 +125,7 @@
               <!-- Dataset Link. -->
               <span class="link-block">
                 <a href="#"
-                   class="external-link button is-normal is-rounded is-dark">
+                   class="external-link button is-normal is-rounded hero-landing-btn">
                   <span class="icon">
                       <i class="far fa-images"></i>
                   </span>
@@ -178,70 +143,154 @@
 <section class="hero teaser">
   <div class="container is-max-desktop">
     <div class="hero-body">
-      <video id="teaser" autoplay muted loop playsinline height="100%">
-        <source src="./static/videos/teaser.mp4"
-                type="video/mp4">
-      </video>
       <h2 class="subtitle has-text-centered">
         <span class="dnerf">Wiggle and Go!</span> uses a brief <em>wiggle</em> motion to identify
         the dynamic behavior of a rope, then <em>goes</em>—performing goal-conditioned manipulation in one shot.
       </h2>
+      <div class="columns is-vcentered" style="margin-top: 1.5rem;">
+        <div class="column is-half">
+          <div class="video-with-label">
+            <video id="red-tracking-video" autoplay muted loop playsinline width="100%">
+              <source src="./static/videos/red_65_5_rgb_video_tracking.mp4" type="video/mp4">
+            </video>
+            <span class="video-speed-label">1x</span>
+          </div>
+        </div>
+        <div class="column is-half">
+          <div class="video-with-label">
+            <video autoplay muted loop playsinline width="100%">
+              <source src="./static/videos/daruma_block_1.mp4" type="video/mp4">
+            </video>
+            <span class="video-speed-label">1/8x</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
+<!-- Wiggle based System Identification text section -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Wiggle based System Identification</h2>
+        <div class="content has-text-justified">
+          <p>(Content about wiggle-based system identification.)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-<section class="hero is-light is-small">
-  <div class="hero-body">
-    <div class="container">
-      <div id="results-carousel" class="carousel results-carousel">
-        <div class="item item-steve">
-          <video poster="" id="steve" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/steve.mp4"
-                    type="video/mp4">
-          </video>
+<!-- Color rope stacked videos carousel -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-4 has-text-centered">Color rope stacked</h2>
+    <div class="hero-body">
+      <div class="container">
+        <div id="color-rope-carousel" class="carousel results-carousel">
+          <div class="item">
+            <div class="video-with-label">
+              <video autoplay muted loop playsinline height="100%">
+                <source src="./static/videos/cropped/brown_rope_stacked.mp4" type="video/mp4">
+              </video>
+              <span class="video-speed-label">1x</span>
+            </div>
+          </div>
+          <div class="item">
+            <div class="video-with-label">
+              <video autoplay muted loop playsinline height="100%">
+                <source src="./static/videos/cropped/chain_rope_stacked.mp4" type="video/mp4">
+              </video>
+              <span class="video-speed-label">1x</span>
+            </div>
+          </div>
+          <div class="item">
+            <div class="video-with-label">
+              <video autoplay muted loop playsinline height="100%">
+                <source src="./static/videos/cropped/orange_rope_stacked.mp4" type="video/mp4">
+              </video>
+              <span class="video-speed-label">1x</span>
+            </div>
+          </div>
+          <div class="item">
+            <div class="video-with-label">
+              <video autoplay muted loop playsinline height="100%">
+                <source src="./static/videos/cropped/red_rope_stacked.mp4" type="video/mp4">
+              </video>
+              <span class="video-speed-label">1x</span>
+            </div>
+          </div>
+          <div class="item">
+            <div class="video-with-label">
+              <video autoplay muted loop playsinline height="100%">
+                <source src="./static/videos/cropped/yellow_rope_stacked.mp4" type="video/mp4">
+              </video>
+              <span class="video-speed-label">1x</span>
+            </div>
+          </div>
         </div>
-        <div class="item item-chair-tp">
-          <video poster="" id="chair-tp" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/chair-tp.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-shiba">
-          <video poster="" id="shiba" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/shiba.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-fullbody">
-          <video poster="" id="fullbody" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/fullbody.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-blueshirt">
-          <video poster="" id="blueshirt" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/blueshirt.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-mask">
-          <video poster="" id="mask" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/mask.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-coffee">
-          <video poster="" id="coffee" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/coffee.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-toby">
-          <video poster="" id="toby" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/toby2.mp4"
-                    type="video/mp4">
-          </video>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stacked RGB videos carousel -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-4 has-text-centered">Stacked RGB videos</h2>
+    <div class="hero-body">
+      <div class="container">
+        <div id="stacked-rgb-carousel" class="carousel results-carousel">
+          <div class="item">
+            <div class="video-with-label">
+              <video autoplay muted loop playsinline height="100%">
+                <source src="./static/videos/cropped/stacked_45_5_rgb_video.mp4" type="video/mp4">
+              </video>
+              <span class="video-speed-label">1x</span>
+            </div>
+          </div>
+          <div class="item">
+            <div class="video-with-label">
+              <video autoplay muted loop playsinline height="100%">
+                <source src="./static/videos/cropped/stacked_45_10_rgb_video.mp4" type="video/mp4">
+              </video>
+              <span class="video-speed-label">1x</span>
+            </div>
+          </div>
+          <div class="item">
+            <div class="video-with-label">
+              <video autoplay muted loop playsinline height="100%">
+                <source src="./static/videos/cropped/stacked_45_20_rgb_video.mp4" type="video/mp4">
+              </video>
+              <span class="video-speed-label">1x</span>
+            </div>
+          </div>
+          <div class="item">
+            <div class="video-with-label">
+              <video autoplay muted loop playsinline height="100%">
+                <source src="./static/videos/cropped/stacked_45_30_rgb_video.mp4" type="video/mp4">
+              </video>
+              <span class="video-speed-label">1x</span>
+            </div>
+          </div>
+          <div class="item">
+            <div class="video-with-label">
+              <video autoplay muted loop playsinline height="100%">
+                <source src="./static/videos/cropped/stacked_55_5_rgb_video.mp4" type="video/mp4">
+              </video>
+              <span class="video-speed-label">1x</span>
+            </div>
+          </div>
+          <div class="item">
+            <div class="video-with-label">
+              <video autoplay muted loop playsinline height="100%">
+                <source src="./static/videos/cropped/stacked_65_5_rgb_video.mp4" type="video/mp4">
+              </video>
+              <span class="video-speed-label">1x</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -404,7 +453,7 @@
             Commons Attribution-ShareAlike 4.0 International License</a>.
           </p>
           <p>
-            This website is based on the <a href="https://github.com/google/nerfies">Nerfies GitHub</a> project website template, as requested by the Nerfies authors—we link back to the <a href="https://nerfies.github.io">Nerfies project page</a> in the footer.
+            This website is based on the <a href="https://github.com/google/nerfies">Nerfies GitHub</a>.
           </p>
         </div>
       </div>

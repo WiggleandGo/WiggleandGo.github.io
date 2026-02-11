@@ -21,6 +21,15 @@ function setInterpolationImage(i) {
 
 
 $(document).ready(function() {
+    // Red tracking video: 6.25x playback speed
+    var redTrackingVideo = document.getElementById('red-tracking-video');
+    if (redTrackingVideo) {
+      redTrackingVideo.playbackRate = 6.25;
+      redTrackingVideo.addEventListener('loadedmetadata', function() {
+        redTrackingVideo.playbackRate = 6.25;
+      });
+    }
+
     // Check for click events on the navbar burger icon
     $(".navbar-burger").click(function() {
       // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
