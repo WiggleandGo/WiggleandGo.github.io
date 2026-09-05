@@ -81,23 +81,12 @@
             <span class="author-block"><sup>2</sup>The University of North Carolina at Chapel Hill</span>
           </div>
 
-          <div class="is-size-5 publication-venue hero-landing-venue">
-            <a href="https://www.corl.org/" target="_blank" rel="noopener">Conference on Robot Learning (CoRL) 2026</a>
+          <div class="is-size-5 has-text-centered">
+            <span class="publication-awards hero-landing-awards">Accepted to CoRL 2026</span>
           </div>
 
           <div class="column has-text-centered">
             <div class="publication-links hero-landing-links">
-              <!-- PDF Link. -->
-              <span class="link-block">
-                <a href="https://drive.google.com/file/d/16aaLebEpdoJh7P-b-0PBARC8pa8Xivfy/view?usp=sharing"
-                   target="_blank" rel="noopener"
-                   class="external-link button is-normal is-rounded hero-landing-btn">
-                  <span class="icon">
-                      <i class="fas fa-file-pdf"></i>
-                  </span>
-                  <span>Paper</span>
-                </a>
-              </span>
               <span class="link-block">
                 <a href="https://arxiv.org/abs/2604.22102"
                    target="_blank" rel="noopener"
@@ -185,13 +174,7 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-            Many robotic tasks are unforgiving; a single mistake in a dynamic throw can lead to unacceptable delays or unrecoverable failure. To mitigate this, we present a novel approach that leverages learned simulation priors to inform goal-conditioned dynamic manipulation of ropes for efficient and accurate task execution.
-          </p>
-          <p>
-            Related methods for dynamic rope manipulation either require large real-world datasets to estimate rope behavior or the use of iterative improvements on attempts at the task for goal completion. We introduce Wiggle and Go!, a system-identification, two-stage framework that enables zero-shot task rope manipulation. The framework consists of a system identification module that observes rope movement to predict descriptive physical parameters, which then informs an optimization method for goal-conditioned action prediction for the robot to execute zero-shot in the real.
-          </p>
-          <p>
-            Our method achieves strong performance across multiple dynamic manipulation tasks enabled by the same task-agnostic system identification module which offers seamless switching between different manipulation tasks, allowing a single model to support a diverse array of manipulation policies. We achieve a <i>3.55</i> cm average accuracy on 3D target striking in real using rope system parameters in comparison to 15.34 cm accuracy when our task model is not system-parameter-informed. We achieve a Pearson correlation coefficient of <i>0.95</i> between Fourier frequencies of the predicted and real ropes on an unseen trajectory.
+            Many robotic tasks are unforgiving; a single mistake in a dynamic throw can lead to unacceptable delays or unrecoverable failure. We introduce Wiggle and Go!, a two-stage framework for zero-shot rope manipulation: a brief, safe <em>wiggle</em> action is observed to predict descriptive rope parameters, which then conditions a trajectory optimizer for zero-shot goal-conditioned execution. Unlike prior dynamic rope manipulation methods that require large real-world datasets or iterative real-world refinement, our identification module is task-agnostic, supporting diverse manipulation policies without retraining. We achieve a 3.55&nbsp;cm average accuracy on 3D target striking in real using rope system parameters in comparison to 15.29&nbsp;cm for uninformed baselines, and over 50% success on multi-objective lobbing and draping tasks. Predicted parameters transfer to unseen motions with 0.95 Pearson correlation between simulated and real rope dynamics, indicating that the identification module generalizes across the task corpus.
           </p>
         </div>
       </div>

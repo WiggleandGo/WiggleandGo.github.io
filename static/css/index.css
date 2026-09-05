@@ -255,21 +255,12 @@ body {
   text-decoration: underline;
 }
 
-.hero-landing-venue {
-  color: #fff !important;
-  font-weight: 600;
-  margin: 0.35rem 0 0.85rem;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.hero-landing-venue a {
-  color: #fff !important;
-  text-decoration: none;
-}
-
-.hero-landing-venue a:hover {
-  color: rgba(255, 255, 255, 0.85) !important;
-  text-decoration: underline;
+.hero-landing-awards {
+  display: inline-block;
+  color: #ff3860 !important;
+  font-weight: bolder;
+  margin: 0.45rem auto 0.9rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
 }
 
 .hero-landing-btn {
