@@ -1,0 +1,18 @@
+{
+  "method": "Exact website MeshCat geometry and recorded motion imported into Blender, styled, and exported to GLB. No physics rerun.",
+  "scenes": {
+    "website": {
+      "source_html": "rope_orange_65_5_nn_params_target_1.2_0.1_0.2.html",
+      "sha256": "902a8cb2c49c3910d18e98dcd37820dcb3b64d0076354d63068a5ca9053bbeda",
+      "frame": 38,
+      "fps": 30,
+      "import_validation": {
+        "position_error_m": 0,
+        "quaternion_component_error": 2.9377187904522373e-08,
+        "objects_imported": 35,
+        "animation_first_frame": 3,
+        "animation_last_frame": 45
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wiggle and Go · Interactive Drake recording</title>
+<link rel="stylesheet" href="viewer.css">
+</head>
+<body>
+<main id="viewer" aria-label="Interactive robot and rope simulation">
+ <div id="viewport"></div>
+ <div class="topbar"><span class="badge"><span class="dot"></span>WIGGLE AND GO</span><div class="camera-tools"><button id="reset" title="Restore the initial camera">Reset view</button><button id="fullscreen" aria-label="Enter fullscreen" title="Fullscreen">⛶</button></div></div>
+ <p id="hint">Drag to orbit · Scroll to zoom</p>
+ <div id="status" role="status">Loading the original Drake recording…</div>
+ <div id="error" hidden><p>The 3D viewer could not start.</p><a href="../animations/rope_orange_65_5_nn_params_target_1.2_0.1_0.2.html">Open the original simulation</a></div>
+ <div class="transport" aria-label="Animation controls">
+  <button id="play" class="primary" disabled aria-label="Play animation">Play</button>
+  <button id="restart" disabled aria-label="Restart animation" title="Restart">↺</button>
+  <label class="timeline"><span class="sr-only">Animation time</span><input id="timeline" type="range" min="0" max="1" value="0" step="0.001" disabled></label>
+  <output id="time" aria-label="Playback time">0.00 / 0.00 s</output>
+  <label class="speed"><span class="sr-only">Playback speed</span><select id="speed" aria-label="Playback speed"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+ </div>
+</main>
+<script type="module" src="viewer.min.js"></script>
+</body></html>

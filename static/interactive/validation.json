@@ -1,0 +1,9 @@
+{
+  "all_recorded_keyframes_match": true,
+  "checked_keyframes": 3010,
+  "animated_objects": 35,
+  "clip_count": 1,
+  "max_translation_component_error_m": 3.301260794869032e-07,
+  "max_quaternion_component_error": 4.040440358954456e-07,
+  "source_sha256": "902a8cb2c49c3910d18e98dcd37820dcb3b64d0076354d63068a5ca9053bbeda"
+}
