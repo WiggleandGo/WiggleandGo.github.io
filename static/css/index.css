@@ -419,3 +419,24 @@ body {
   outline-offset: 4px;
   border-radius: 2px;
 }
+
+/* Supporting experimental footage below the task demonstrations. */
+.raw-video-link {
+  margin: 1.25rem auto 0;
+  max-width: 65ch;
+  font-size: .9375rem;
+  line-height: 1.6;
+}
+.raw-video-link a {
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
+.raw-video-link a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+.raw-video-description {
+  display: block;
+  margin-top: .25rem;
+  color: oklch(45% .008 250);
+}
