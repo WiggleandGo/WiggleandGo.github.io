@@ -404,3 +404,18 @@ body {
 .youtube-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:grid;place-items:center;width:72px;height:50px;border-radius:14px;background:#e52323;color:white;font-size:25px;padding-left:4px}
 .youtube-facade:hover .youtube-play{background:#ff2424}
 .youtube-facade:focus-visible{outline:4px solid #3273dc;outline-offset:-4px}
+
+/* Make the personal website discoverable without adding another promotion. */
+.hero-landing-authors a.author-website-link {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .2em;
+}
+.hero-landing-authors a.author-website-link:hover {
+  text-decoration-thickness: 2px;
+}
+.hero-landing-authors a.author-website-link:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+  border-radius: 2px;
+}
