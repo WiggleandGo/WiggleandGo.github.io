@@ -31,6 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }, {threshold: [0, .05]});
   function observe(video) {
+    // Videos with controls, including the research video, start only on user action.
+    if (video.controls) return;
     if (videos.has(video)) return;
     videos.add(video);
     video.addEventListener('loadedmetadata', () => {

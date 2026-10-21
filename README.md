@@ -9,10 +9,10 @@ Wiggle and Go! is a two-stage framework for zero-shot rope manipulation. A brief
 If you find this work useful, please cite:
 
 ```
-@article{jakobsson2026wag,
-  author    = {Jakobsson, Arthur and Mahajan, Abhinav and Pullalarevu, Karthik and Suresh, Krishna and Yao, Yunchao and Mao, Yuemin and Duisterhof, Bardienus and Syed, Shahram and Ichnowski, Jeffrey},
+@inproceedings{jakobsson2026wag,
+  author    = {Jakobsson, Arthur and Mahajan, Abhinav and Pullalarevu, Karthik and Suresh, Krishna and Yao, Yunchao and Mao, Yuemin and Duisterhof, Bardienus and Syed, Shahram Najam and Ichnowski, Jeffrey},
   title     = {Wiggle and Go! System Identification for Zero-Shot Dynamic Rope Manipulation},
-  journal   = {CoRL},
+  booktitle = {10th Conference on Robot Learning},
   year      = {2026},
 }
 ```

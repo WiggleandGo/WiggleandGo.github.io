@@ -1,12 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="description"
-        content="Wiggle and Go! System Identification for Zero-Shot Dynamic Rope Manipulation.">
-  <meta name="keywords" content="Wiggle and Go, WaG, system identification, rope manipulation, robotics">
+  <meta name="description" content="Wiggle and Go! uses a brief active-sensing wiggle for robotic system identification and zero-shot dynamic rope manipulation. CoRL 2026 paper, video, and results.">
+  <meta name="keywords" content="robotic manipulation, system identification, dynamic rope manipulation, active sensing, zero-shot manipulation, sim-to-real transfer">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Wiggle and Go! System Identification for Zero-Shot Dynamic Rope Manipulation</title>
+  <title>Wiggle and Go! | Zero-Shot Dynamic Rope Manipulation | CoRL 2026</title>
+  <link rel="canonical" href="https://wiggleandgo.github.io/">
+  <meta name="citation_title" content="Wiggle and Go! System Identification for Zero-Shot Dynamic Rope Manipulation">
+  <meta name="citation_author" content="Arthur Jakobsson">
+  <meta name="citation_author" content="Abhinav Mahajan">
+  <meta name="citation_author" content="Karthik Pullalarevu">
+  <meta name="citation_author" content="Krishna Suresh">
+  <meta name="citation_author" content="Yunchao Yao">
+  <meta name="citation_author" content="Yuemin Mao">
+  <meta name="citation_author" content="Bardienus Duisterhof">
+  <meta name="citation_author" content="Shahram Najam Syed">
+  <meta name="citation_author" content="Jeffrey Ichnowski">
+  <meta name="citation_publication_date" content="2026">
+  <meta name="citation_conference_title" content="10th Conference on Robot Learning (CoRL 2026)">
+  <meta name="citation_pdf_url" content="https://arxiv.org/pdf/2604.22102">
+  <meta name="citation_arxiv_id" content="2604.22102">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Wiggle and Go! | Zero-Shot Dynamic Rope Manipulation">
+  <meta property="og:description" content="A brief wiggle identifies rope dynamics for one-shot robotic manipulation. CoRL 2026 paper and experiments.">
+  <meta property="og:url" content="https://wiggleandgo.github.io/">
+  <meta property="og:image" content="https://wiggleandgo.github.io/static/images/social-preview.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Blender renders of rope striking, draping, and lobbing with an xArm robot">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Wiggle and Go! | Zero-Shot Dynamic Rope Manipulation">
+  <meta name="twitter:description" content="CoRL 2026 research on system identification and zero-shot dynamic rope manipulation.">
+  <meta name="twitter:image" content="https://wiggleandgo.github.io/static/images/social-preview.jpg">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"ScholarlyArticle","headline":"Wiggle and Go! System Identification for Zero-Shot Dynamic Rope Manipulation","name":"Wiggle and Go! System Identification for Zero-Shot Dynamic Rope Manipulation","url":"https://arxiv.org/abs/2604.22102","mainEntityOfPage":"https://wiggleandgo.github.io/","image":"https://wiggleandgo.github.io/static/images/social-preview.jpg","datePublished":"2026","isPartOf":{"@type":"Event","name":"10th Conference on Robot Learning (CoRL 2026)"},"author":[{"@type":"Person","name":"Arthur Jakobsson","affiliation":{"@type":"Organization","name":"CMU Robotics Institute, Carnegie Mellon University"}},{"@type":"Person","name":"Abhinav Mahajan","affiliation":{"@type":"Organization","name":"CMU Robotics Institute, Carnegie Mellon University"}},{"@type":"Person","name":"Karthik Pullalarevu","affiliation":{"@type":"Organization","name":"CMU Robotics Institute, Carnegie Mellon University"}},{"@type":"Person","name":"Krishna Suresh","affiliation":{"@type":"Organization","name":"CMU Robotics Institute, Carnegie Mellon University"}},{"@type":"Person","name":"Yunchao Yao","affiliation":{"@type":"Organization","name":"The University of North Carolina at Chapel Hill"}},{"@type":"Person","name":"Yuemin Mao","affiliation":{"@type":"Organization","name":"CMU Robotics Institute, Carnegie Mellon University"}},{"@type":"Person","name":"Bardienus Duisterhof","affiliation":{"@type":"Organization","name":"CMU Robotics Institute, Carnegie Mellon University"}},{"@type":"Person","name":"Shahram Najam Syed","affiliation":{"@type":"Organization","name":"CMU Robotics Institute, Carnegie Mellon University"}},{"@type":"Person","name":"Jeffrey Ichnowski","affiliation":{"@type":"Organization","name":"CMU Robotics Institute, Carnegie Mellon University"}}],"keywords":["robotic manipulation","system identification","dynamic rope manipulation","active sensing","zero-shot manipulation","sim-to-real transfer"]}
+  </script>
 
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
@@ -32,13 +61,14 @@
   <link rel="icon" href="./static/favicon_io/favicon.ico">
 
   <script defer src="./static/js/bulma-carousel.min.js"></script>
-  <script defer src="./static/js/index.min.js?v=c5b1cacad0"></script>
+  <script defer src="./static/js/index.min.js?v=youtube-manual-20261021"></script>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to content</a>
 
 <section class="hero hero-landing">
   <div class="hero-landing-video-wrap">
-    <video preload="auto" poster="./static/videos/optimized/daruma_block_1.webp" class="hero-landing-video" muted loop playsinline>
+    <video preload="metadata" poster="./static/videos/optimized/daruma_block_1.webp" class="hero-landing-video" muted loop playsinline aria-hidden="true">
       <source src="./static/videos/optimized/hero.mp4" type="video/mp4">
     </video>
     <span class="video-speed-label">1/8x</span>
@@ -52,26 +82,26 @@
             <span class="author-block">
               <a class="author-website-link" href="https://arthurjakobsson.com/" target="_blank" rel="noopener">Arthur Jakobsson</a><sup>1</sup>,</span>
             <span class="author-block">
-              <a href="#">Abhinav Mahajan</a><sup>1</sup>,</span>
+              Abhinav Mahajan<sup>1</sup>,</span>
             <span class="author-block">
-              <a href="#">Karthik Pullalarevu</a><sup>1</sup>,</span>
+              Karthik Pullalarevu<sup>1</sup>,</span>
             <span class="author-block">
-              <a href="#">Krishna Suresh</a><sup>1</sup>,</span>
+              Krishna Suresh<sup>1</sup>,</span>
             <span class="author-block">
-              <a href="#">Yunchao Yao</a><sup>2</sup>,</span>
+              Yunchao Yao<sup>2</sup>,</span>
             <span class="author-block">
-              <a href="#">Yuemin Mao</a><sup>1</sup>,</span>
+              Yuemin Mao<sup>1</sup>,</span>
             <span class="author-block">
-              <a href="#">Bardienus Duisterhof</a><sup>1</sup>,</span>
+              Bardienus Duisterhof<sup>1</sup>,</span>
             <span class="author-block">
-              <a href="#">Shahram Syed</a><sup>1</sup>,</span>
+              Shahram Najam Syed<sup>1</sup>,</span>
             <span class="author-block">
-              <a href="#">Jeffrey Ichnowski</a><sup>1</sup>
+              Jeffrey Ichnowski<sup>1</sup>
             </span>
           </div>
 
           <div class="is-size-5 publication-authors hero-landing-authors">
-            <span class="author-block"><sup>1</sup><a href="https://momentum-robotics-lab.github.io/" target="_blank" rel="noopener">Momentum Lab</a>, Robotics Institute, Carnegie Mellon University,</span>
+            <span class="author-block"><sup>1</sup><a href="https://momentum-robotics-lab.github.io/" target="_blank" rel="noopener">Momentum Lab</a>, CMU Robotics Institute (Carnegie Mellon University),</span>
             <span class="author-block"><sup>2</sup>The University of North Carolina at Chapel Hill</span>
           </div>
 
@@ -93,7 +123,7 @@
               </span>
               <!-- Video Link. -->
               <span class="link-block">
-                <a href="https://youtu.be/_J3R1QXX3bI"
+                <a href="https://youtu.be/8carCP5__u8"
                    target="_blank" rel="noopener"
                    class="external-link button is-normal is-rounded hero-landing-btn">
                   <span class="icon">
@@ -119,6 +149,7 @@
   </div>
 </section>
 
+<main id="main-content">
 <section class="hero teaser">
   <div class="container is-max-desktop">
     <div class="hero-body">
@@ -126,6 +157,10 @@
         <span class="dnerf">Wiggle and Go!</span> uses a brief <em>wiggle</em> motion to identify
         the dynamic behavior of a rope, then <em>goes</em>—performing goal-conditioned manipulation in one shot.
       </h2>
+      <div class="key-results" aria-label="Key paper results">
+        <div class="key-result"><strong>3.55 cm</strong><span>mean 3D target striking error in real-world tests with learned rope parameters</span></div>
+        <div class="key-result"><strong>0.95</strong><span>mean Pearson frequency correlation between simulated and real rope motion on held-out actions</span></div>
+      </div>
       <div class="columns is-vcentered" style="margin-top: 1.5rem;">
         <div class="column is-half">
           <div class="video-with-label">
@@ -168,10 +203,16 @@
     <!-- Paper video. -->
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
-        <h2 class="title is-3">Video</h2>
-        <div class="publication-video">
-          <button class="youtube-facade" type="button" data-embed="https://www.youtube.com/embed/_J3R1QXX3bI?si=5WnmENWNJFW7jd_x" aria-label="Play the paper video"><img src="./static/images/youtube-poster.jpg" alt="Wiggle and Go paper video" width="480" height="360" loading="lazy" decoding="async"><span class="youtube-play" aria-hidden="true">▶</span></button><noscript><a href="https://youtu.be/_J3R1QXX3bI">Watch the paper video on YouTube</a></noscript>
+        <h2 class="title is-3">Research video</h2>
+        <div class="publication-video" id="research-video">
+          <button class="youtube-facade" type="button"
+                  data-embed="https://www.youtube-nocookie.com/embed/8carCP5__u8?rel=0"
+                  aria-label="Play Wiggle and Go! research video">
+            <img src="./static/images/video-thumbnail.jpg" alt="" width="1280" height="720">
+            <span class="youtube-play" aria-hidden="true">&#9654;</span>
+          </button>
         </div>
+        <p class="video-caption">A brief wiggle identifies rope dynamics before zero-shot striking, lobbing, and draping. <a href="https://youtu.be/8carCP5__u8" target="_blank" rel="noopener">Watch on YouTube</a>.</p>
       </div>
     </div>
     <!--/ Paper video. -->
@@ -186,13 +227,23 @@
   <div class="columns is-centered has-text-centered">
     <div class="column is-full">
       <figure class="pipeline-figure">
-        <img loading="lazy" decoding="async" src="./static/images/pipeline_figure2.png" width="2000" height="675" alt="Wiggle and Go pipeline overview figure." style="display: block; width: 100%; height: auto;" />
+        <img loading="lazy" decoding="async" src="./static/images/pipeline_figure2.png" width="2000" height="675" alt="Pipeline: a real robot wiggles a rope, a simulation-trained network estimates rope parameters, and a policy optimizer plans the goal-directed motion." style="display: block; width: 100%; height: auto;" />
         <figcaption class="has-text-centered" style="margin-top: 0.75em;">
           <b>The Wiggle and Go! pipeline:</b> We train a system identification neural network Φ-NN entirely in simulation. We perform a wiggle in real as an input for Φ-NN. The output of these parameters are used to optimize an action for a chosen task which is then executed in real. Items highlighted in <span style="color: green;">green</span> are the only elements of our procedure performed in real, once each.
         </figcaption>
       </figure>
     </div>
   </div>
+  </div>
+</section>
+
+<section class="section research-tasks" aria-labelledby="tasks-heading">
+  <div class="container is-max-desktop">
+    <h2 id="tasks-heading" class="title is-3 has-text-centered">Three dynamic rope tasks</h2>
+    <figure>
+      <img src="./static/images/blender-tasks.webp" width="2000" height="457" loading="lazy" decoding="async" alt="Blender render of the xArm robot performing 3D rope striking, draping over a wall, and lobbing onto a target">
+      <figcaption>Drake tasks rendered in Blender: 3D striking, draping, and lobbing. Green marks the extender; red and blue mark targets.</figcaption>
+    </figure>
   </div>
 </section>
 
@@ -301,7 +352,7 @@
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-full-width">
-        <h2 id="drake-animation" class="title is-3 has-text-centered">Drake task animation</h2>
+        <h2 id="drake-animation" class="title is-3 has-text-centered">Interactive Drake task animation</h2>
         <div class="hero-body" style="padding-top: 1rem;">
           <iframe
             src="./static/interactive/index.html?v=optimized1"
@@ -326,7 +377,7 @@
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-full-width">
-        <h2 class="title is-3 has-text-centered">Full Pipeline Task Completions</h2>
+        <h2 class="title is-3 has-text-centered">Full pipeline task completions</h2>
         <div class="hero-body" style="padding-top: 1.5rem;">
           <div id="task-completion-slider" class="task-completion-slider">
             <button class="task-slider-btn task-slider-prev" type="button" aria-label="Previous video">
@@ -383,15 +434,17 @@
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
-    <pre><code>@article{jakobsson2026wag,
-  author    = {Jakobsson, Arthur and Mahajan, Abhinav and Pullalarevu, Karthik and Suresh, Krishna and Yao, Yunchao and Mao, Yuemin and Duisterhof, Bardienus and Syed, Shahram and Ichnowski, Jeffrey},
+    <pre><code>@inproceedings{jakobsson2026wag,
+  author    = {Jakobsson, Arthur and Mahajan, Abhinav and Pullalarevu, Karthik and Suresh, Krishna and Yao, Yunchao and Mao, Yuemin and Duisterhof, Bardienus and Syed, Shahram Najam and Ichnowski, Jeffrey},
   title     = {Wiggle and Go! System Identification for Zero-Shot Dynamic Rope Manipulation},
-  journal   = {CoRL},
+  booktitle = {10th Conference on Robot Learning},
   year      = {2026},
 }</code></pre>
   </div>
 </section>
 
+
+</main>
 
 <footer class="footer">
   <div class="container">
